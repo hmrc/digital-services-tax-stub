@@ -1,3 +1,6 @@
 # microservice specific routes
 
 GET        /hello-world             uk.gov.hmrc.digitalservicestaxstub.controllers.MicroserviceHelloWorldController.hello
+
+#ROSM registration
+POST       /registration/organisation/utr/:utr                        uk.gov.hmrc.digitalservicestaxstub.controllers.RosmController.register(utr)
