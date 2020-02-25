@@ -83,13 +83,27 @@ object RosmGenerator {
     )
   }
 
-  private def shouldGenAgentRef(isAnAgent: Boolean, utr: String): Option[String] = {
-    if (isAnAgent) Gen.alphaNumStr.seeded(utr) else None
+  private def shouldGenAgentRef(isAnAgent: Boolean, seed: Long): Option[String] = {
+    if (isAnAgent) Gen.alphaNumStr.seeded(seed) else None
+  }
+
+
+  def genRosmRegisterWithoutIDResponse(data: RosmRegisterWithoutIDRequest) = for {
+    safeId <- genSafeId
+    sapNumber <- pattern"9999999999"
+    agentReferenceNumber = shouldGenAgentRef(data.isAnAgent, data.organisation.fold("1")(_.organisationName).map(_.toInt).sum)
+  } yield {
+    RosmRegisterWitoutIDResponse(
+      java.time.LocalDateTime.now.toString,
+      sapNumber,
+      safeId,
+      agentReferenceNumber
+    )
   }
 
   def genRosmRegisterResponse(rosmRequest: RosmRegisterRequest, utr: String): Gen[Option[RosmRegisterResponse]] = (for {
     safeId <- genSafeId
-    agentReferenceNumber = shouldGenAgentRef(rosmRequest.isAnAgent, utr)
+    agentReferenceNumber = shouldGenAgentRef(rosmRequest.isAnAgent, utr.toLong)
     isEditable <- Gen.boolean
     isAnAgent = rosmRequest.isAnAgent
     isAnIndividual <- Gen.const(rosmRequest.individual.isDefined)
