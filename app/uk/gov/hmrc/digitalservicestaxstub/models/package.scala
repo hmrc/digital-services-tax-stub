@@ -32,6 +32,13 @@ package object models {
   implicit val rosmResponseContactDetails: OFormat[RosmResponseContactDetails] = Json.format[RosmResponseContactDetails]
   implicit val rosmRegisterResponse: OFormat[RosmRegisterResponse] = Json.format[RosmRegisterResponse]
 
+  //ROSM register response without ID formatters
+  implicit val addressFormatter: OFormat[Address] = Json.format[Address]
+  implicit val contactDetailsFormatter: OFormat[RosmRequestWithoutIDContactDetails] = Json.format[RosmRequestWithoutIDContactDetails]
+  implicit val organisationWithoutIdFormatter: OFormat[RosmRegisterWithoutIDOrganisation] = Json.format[RosmRegisterWithoutIDOrganisation]
+  implicit val rosmRegisterWithoutIDRequest: OFormat[RosmRegisterWithoutIDRequest] = Json.format[RosmRegisterWithoutIDRequest]
+  implicit val rosmRegisterResponseWithoutID: OFormat[RosmRegisterWitoutIDResponse] = Json.format[RosmRegisterWitoutIDResponse]
+
   implicit val failureFormat: OFormat[FailureMessage] = Json.format[FailureMessage]
 
 }

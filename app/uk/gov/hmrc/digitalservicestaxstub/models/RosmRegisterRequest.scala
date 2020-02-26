@@ -22,7 +22,7 @@ case class RosmRegisterRequest(
   regime: String,
   requiresNameMatch: Boolean,
   isAnAgent: Boolean,
-  individual: Option[Individual] = None,
+  individual: Option[Individual] = None, // TODO don't think this is relevant
   organisation: Option[OrganisationRequest] = None
 )
 

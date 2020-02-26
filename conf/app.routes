@@ -2,5 +2,8 @@
 
 GET        /hello-world             uk.gov.hmrc.digitalservicestaxstub.controllers.MicroserviceHelloWorldController.hello
 
-#ROSM registration
+#ROSM registration with ID
 POST       /registration/organisation/utr/:utr                        uk.gov.hmrc.digitalservicestaxstub.controllers.RosmController.register(utr)
+
+#ROSM registration without ID
+POST       /registration/02.00.00/organisation                        uk.gov.hmrc.digitalservicestaxstub.controllers.RosmController.registerWithoutID

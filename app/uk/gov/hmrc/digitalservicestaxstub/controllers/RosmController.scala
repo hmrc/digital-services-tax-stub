@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.digitalservicestaxstub.config.AppConfig
-import uk.gov.hmrc.digitalservicestaxstub.models.{FailureMessage, RosmRegisterRequest}
+import uk.gov.hmrc.digitalservicestaxstub.models.{FailureMessage, RosmRegisterRequest, RosmRegisterWithoutIDRequest}
 import uk.gov.hmrc.digitalservicestaxstub.services.RosmService
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
@@ -33,6 +33,23 @@ class RosmController @Inject()(
   AuthAndEnvAction: AuthAndEnvAction,
   rosmService: RosmService
 ) extends BackendController(cc) {
+
+  def registerWithoutID: Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
+    withJsonBody[RosmRegisterWithoutIDRequest](rosmRequest => {
+      if (rosmRequest.regime.matches("DST"))
+        rosmService.handleRegisterWithoutIdRequest(rosmRequest) match {
+          case Some(data) => Future successful Ok(Json.toJson(data))
+          case _ => Future successful NotFound(Json.toJson(
+            FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
+          )
+        }
+      else
+        Future successful BadRequest(Json.toJson(
+          FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload"))
+        )
+      }
+    )
+  }
 
   def register(utr: String): Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
     withJsonBody[RosmRegisterRequest](rosmRequest =>
