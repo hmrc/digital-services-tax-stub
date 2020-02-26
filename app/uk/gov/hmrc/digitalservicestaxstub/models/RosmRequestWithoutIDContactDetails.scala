@@ -17,8 +17,8 @@
 package uk.gov.hmrc.digitalservicestaxstub.models
 
 case class RosmRequestWithoutIDContactDetails(
-  phoneNumber: String,
-  mobileNumber: String,
-  faxNumber: String,
-  emailAddress: String
+  phoneNumber: Option[String],
+  mobileNumber: Option[String],
+  faxNumber: Option[String],
+  emailAddress: Option[String]
 )
