@@ -3,7 +3,10 @@
 GET        /hello-world             uk.gov.hmrc.digitalservicestaxstub.controllers.MicroserviceHelloWorldController.hello
 
 #ROSM registration with ID
-POST       /registration/organisation/utr/:utr                        uk.gov.hmrc.digitalservicestaxstub.controllers.RosmController.register(utr)
+POST       /registration/organisation/utr/:utr                        uk.gov.hmrc.digitalservicestaxstub.controllers.DESController.rosmLookupWithId(utr)
 
 #ROSM registration without ID
-POST       /registration/02.00.00/organisation                        uk.gov.hmrc.digitalservicestaxstub.controllers.RosmController.registerWithoutID
+POST       /registration/02.00.00/organisation                        uk.gov.hmrc.digitalservicestaxstub.controllers.DESController.rosmLookupWithoutID
+
+#Generic subscription
+POST       /cross-regime/subscription/:regime/:idType/:idNumber       uk.gov.hmrc.digitalservicestaxstub.controllers.DESController.dstRegistration(regime, idType, idNumber)

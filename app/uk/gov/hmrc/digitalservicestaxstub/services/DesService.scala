@@ -18,23 +18,27 @@ package uk.gov.hmrc.digitalservicestaxstub.services
 
 import javax.inject.Singleton
 import uk.gov.hmrc.digitalservicestaxstub.models.EnumUtils.idEnum
-import uk.gov.hmrc.digitalservicestaxstub.models.{RosmRegisterRequest, RosmRegisterResponse, RosmRegisterWithoutIDRequest, RosmRegisterWitoutIDResponse}
+import uk.gov.hmrc.digitalservicestaxstub.models.{DSTRegistration, DSTRegistrationResponse, RosmRegisterRequest, RosmRegisterResponse, RosmRegisterWithoutIDRequest, RosmRegisterWitoutIDResponse}
 import uk.gov.hmrc.smartstub._
 import cats.implicits._
 
 @Singleton
-class RosmService {
+class DesService {
 
-  def handleRegisterWithoutIdRequest(data: RosmRegisterWithoutIDRequest): Option[RosmRegisterWitoutIDResponse] =
-    RosmGenerator
+  def handleDstRegistration(idType: String, idNumber: String, regData: DSTRegistration): Option[DSTRegistrationResponse] =
+    DesGenerator
+    .genDstRegisterResponse
+    .seeded(idNumber)
+
+  def handleRosmLookupWithoutIdRequest(data: RosmRegisterWithoutIDRequest): Option[RosmRegisterWitoutIDResponse] =
+    DesGenerator
       .genRosmRegisterWithoutIDResponse(data)
       .seeded(
         data.organisation
           .fold("1")(_.organisationName).map(_.toInt).sum.toLong).get.some
 
-
-  def handleRegisterRequest(data: RosmRegisterRequest, utr: String): Option[RosmRegisterResponse] = {
-    RosmGenerator.genRosmRegisterResponse(data, utr).seeded(utr).get
+  def handleRosmLookupWithIdRequest(data: RosmRegisterRequest, utr: String): Option[RosmRegisterResponse] = {
+    DesGenerator.genRosmRegisterResponse(data, utr).seeded(utr).get
   }
 
 }
