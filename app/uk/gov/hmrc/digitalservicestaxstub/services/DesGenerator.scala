@@ -17,6 +17,8 @@
 package uk.gov.hmrc.digitalservicestaxstub.services
 
 
+import java.time.LocalDateTime
+
 import cats.implicits._
 import org.scalacheck.Gen
 import org.scalacheck.support.cats._
@@ -24,7 +26,7 @@ import uk.gov.hmrc.digitalservicestaxstub.models.EnumUtils.idEnum
 import uk.gov.hmrc.smartstub._
 import uk.gov.hmrc.digitalservicestaxstub.models._
 
-object RosmGenerator {
+object DesGenerator {
 
   private def variableLengthString(min: Int, max: Int) = {
     Gen.choose(min, max).flatMap(len => Gen.listOfN(len, Gen.alphaLowerChar)).map(_.mkString)
@@ -114,5 +116,14 @@ object RosmGenerator {
   } yield {
     RosmRegisterResponse(safeId, agentReferenceNumber, isEditable, isAnAgent, isAnIndividual, individual, organisation, address, contactDetails)
   }).usually
+
+
+  def genDstRegisterResponse: Gen[DSTRegistrationResponse] = for {
+    safeId <- genSafeId
+  } yield DSTRegistrationResponse(
+    LocalDateTime.now.toString,
+    safeId
+  )
+
 }
 

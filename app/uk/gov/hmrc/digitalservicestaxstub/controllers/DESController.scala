@@ -20,24 +20,24 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.digitalservicestaxstub.config.AppConfig
-import uk.gov.hmrc.digitalservicestaxstub.models.{FailureMessage, RosmRegisterRequest, RosmRegisterWithoutIDRequest}
-import uk.gov.hmrc.digitalservicestaxstub.services.RosmService
+import uk.gov.hmrc.digitalservicestaxstub.models.{DSTRegistration, FailureMessage, RosmRegisterRequest, RosmRegisterWithoutIDRequest}
+import uk.gov.hmrc.digitalservicestaxstub.services.DesService
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
 import scala.concurrent.Future
 
 @Singleton()
-class RosmController @Inject()(
+class DESController @Inject()(
   appConfig: AppConfig,
   cc: ControllerComponents,
   AuthAndEnvAction: AuthAndEnvAction,
-  rosmService: RosmService
+  desService: DesService
 ) extends BackendController(cc) {
 
-  def registerWithoutID: Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
+  def rosmLookupWithoutID: Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
     withJsonBody[RosmRegisterWithoutIDRequest](rosmRequest => {
       if (rosmRequest.regime.matches("DST"))
-        rosmService.handleRegisterWithoutIdRequest(rosmRequest) match {
+        desService.handleRosmLookupWithoutIdRequest(rosmRequest) match {
           case Some(data) => Future successful Ok(Json.toJson(data))
           case _ => Future successful NotFound(Json.toJson(
             FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
@@ -51,10 +51,10 @@ class RosmController @Inject()(
     )
   }
 
-  def register(utr: String): Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
+  def rosmLookupWithId(utr: String): Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
     withJsonBody[RosmRegisterRequest](rosmRequest =>
       if (rosmRequest.regime.matches("DST"))
-        rosmService.handleRegisterRequest(rosmRequest, utr) match {
+        desService.handleRosmLookupWithIdRequest(rosmRequest, utr) match {
           case Some(data) => Future successful Ok(Json.toJson(data))
           case _ => Future successful NotFound(Json.toJson(
             FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
@@ -67,5 +67,21 @@ class RosmController @Inject()(
     )
   }
 
+
+  def dstRegistration(regime: String, idType: String, idNumber: String) = AuthAndEnvAction.async(parse.json) { implicit request =>
+    withJsonBody[DSTRegistration](regData =>
+      if (regime.matches("DST"))
+        desService.handleDstRegistration(idType, idNumber, regData) match {
+          case Some(data) => Future successful Ok(Json.toJson(data))
+          case _ => Future successful NotFound(Json.toJson(
+            FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
+          )
+        }
+      else
+        Future successful BadRequest(Json.toJson( // TODO look at spec and flesh out, this should be INVALID_REGIME 400
+          FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload."))
+        )
+    )
+  }
 }
 
