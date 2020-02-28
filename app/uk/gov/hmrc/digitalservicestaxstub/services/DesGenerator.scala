@@ -73,7 +73,7 @@ object DesGenerator {
   private def shouldGenOrg(utr: String): OrganisationResponse = {
     import RosmOrganisationType._
     OrganisationResponse(
-      companyName.seeded(utr).get, // TODO use company when there's a new release of smartstub
+      companyName.seeded(utr).get,
       Gen.boolean.seeded(utr).get,
       Gen.oneOf(CorporateBody, LLP, UnincorporatedBody, Unknown).seeded(utr).get)
   }
