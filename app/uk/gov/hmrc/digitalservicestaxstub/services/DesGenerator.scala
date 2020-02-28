@@ -32,6 +32,8 @@ object DesGenerator {
     Gen.choose(min, max).flatMap(len => Gen.listOfN(len, Gen.alphaLowerChar)).map(_.mkString)
   }
 
+  private def companyName: Gen[String] = Gen.company.retryUntil(a => a.length < 105 && a.length > 1)
+
   private def addressLine = variableLengthString(0, 35)
 
   private def genRosmResponseAddress: Gen[RosmResponseAddress] = (
@@ -71,7 +73,7 @@ object DesGenerator {
   private def shouldGenOrg(utr: String): OrganisationResponse = {
     import RosmOrganisationType._
     OrganisationResponse(
-      Gen.alphaStr.seeded(utr).get, // TODO use company when there's a new release of smartstub
+      companyName.seeded(utr).get, // TODO use company when there's a new release of smartstub
       Gen.boolean.seeded(utr).get,
       Gen.oneOf(CorporateBody, LLP, UnincorporatedBody, Unknown).seeded(utr).get)
   }
