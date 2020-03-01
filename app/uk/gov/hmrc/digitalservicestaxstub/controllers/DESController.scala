@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.digitalservicestaxstub.config.AppConfig
-import uk.gov.hmrc.digitalservicestaxstub.models.{DSTRegistration, FailureMessage, RosmRegisterRequest, RosmRegisterWithoutIDRequest}
+import uk.gov.hmrc.digitalservicestaxstub.models._
 import uk.gov.hmrc.digitalservicestaxstub.services.DesService
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
@@ -69,7 +69,8 @@ class DESController @Inject()(
 
 
   def dstRegistration(regime: String, idType: String, idNumber: String) = AuthAndEnvAction.async(parse.json) { implicit request =>
-    withJsonBody[DSTRegistration](regData =>
+
+    withJsonBody[EeittSubscribe]{case EeittSubscribe(regData) =>
       if (regime.matches("DST"))
         desService.handleDstRegistration(idType, idNumber, regData) match {
           case Some(data) => Future successful Ok(Json.toJson(data))
@@ -81,7 +82,7 @@ class DESController @Inject()(
         Future successful BadRequest(Json.toJson( // TODO look at spec and flesh out, this should be INVALID_REGIME 400
           FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload."))
         )
-    )
+    }
   }
 }
 
