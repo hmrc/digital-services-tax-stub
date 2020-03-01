@@ -27,10 +27,10 @@ case class LegalEntity(
 
 case class BusinessContactDetails(
   addressLine1: String,
-  addressLine2: String,
-  addressLine3: String,
-  addressLine4: String,
-  postCode: String,
+  addressLine2: Option[String],
+  addressLine3: Option[String],
+  addressLine4: Option[String],
+  postCode: Option[String],
   email: String,
   addressNotInUK: String,
   addressInputModeIndicator: String
@@ -68,4 +68,13 @@ case object DSTRegistration {
   implicit val cdformat = Json.format[CommonDetails]
   implicit val pformat = Json.format[Params]
   implicit val format = Json.format[DSTRegistration]
+}
+
+case class EeittSubscribe(
+  registrationDetails: DSTRegistration //,
+//  siteDetails: SiteDetails // if needed? 
+)
+
+object EeittSubscribe {
+  implicit val format = Json.format[EeittSubscribe]
 }
