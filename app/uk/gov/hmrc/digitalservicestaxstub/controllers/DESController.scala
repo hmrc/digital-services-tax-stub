@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.digitalservicestaxstub.controllers
+package uk.gov.hmrc.digitalservicestaxstub
+package controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents}
-import uk.gov.hmrc.digitalservicestaxstub.config.AppConfig
-import uk.gov.hmrc.digitalservicestaxstub.models._
-import uk.gov.hmrc.digitalservicestaxstub.services.DesService
+import config.AppConfig
+import models._
+import services.{DesService, DesGenerator}
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
 import scala.concurrent.Future
@@ -83,6 +84,24 @@ class DESController @Inject()(
           FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload."))
         )
     }
+  }
+
+  def dstReturn(regNo: String) = AuthAndEnvAction(parse.json) { implicit request =>
+    val r: DSTRegistrationResponse = DesGenerator
+      .genDstRegisterResponse
+      .sample.get
+    Ok(Json.toJson(r))
+  }
+
+  lazy val cannedPeriodResponse: String =
+    scala.io.Source.fromInputStream(
+      getClass.getResourceAsStream(
+        "/dst/1330-get-obligation.response.example1.json"
+      )
+    ).getLines.mkString("\n")
+
+  def getPeriods(dstRegNo: String) = Action {
+    Ok(Json.parse(cannedPeriodResponse))
   }
 }
 
