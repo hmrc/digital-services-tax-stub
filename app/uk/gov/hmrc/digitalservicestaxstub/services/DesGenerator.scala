@@ -63,6 +63,8 @@ object DesGenerator {
     } yield s"$a$b$c$d"
   }
 
+  private def genFormBundleNumber = pattern"999999999999"
+
   private def genRosmResponseContactDetails: Gen[RosmResponseContactDetails] = (
     Gen.ukPhoneNumber.almostAlways, //primaryPhoneNumber
     Gen.ukPhoneNumber.sometimes, //secondaryPhoneNumber
@@ -119,12 +121,11 @@ object DesGenerator {
     RosmRegisterResponse(safeId, agentReferenceNumber, isEditable, isAnAgent, isAnIndividual, individual, organisation, address, contactDetails)
   }).usually
 
-
   def genDstRegisterResponse: Gen[DSTRegistrationResponse] = for {
-    safeId <- genSafeId
+    formBundleNumber <- genFormBundleNumber
   } yield DSTRegistrationResponse(
     LocalDateTime.now.toString,
-    safeId
+    formBundleNumber
   )
 
 }
