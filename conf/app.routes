@@ -11,3 +11,7 @@ POST       /cross-regime/subscription/:regime/:idType/:idNumber       uk.gov.hmr
 POST /cross-regime/return/DST/eeits/:dstRegNo                         uk.gov.hmrc.digitalservicestaxstub.controllers.DESController.dstReturn(dstRegNo)
 
 GET /enterprise/obligation-data/zdst/:dstRegNo/DST                    uk.gov.hmrc.digitalservicestaxstub.controllers.DESController.getPeriods(dstRegNo)
+
+GET /trigger/callback/te/:seed                                        uk.gov.hmrc.digitalservicestaxstub.controllers.TaxEnrolmentCallbackController.trigger(seed)
+
+GET /get-subscription/:seed                                           uk.gov.hmrc.digitalservicestaxstub.controllers.TaxEnrolmentCallbackController.getDstRegNo(seed)
