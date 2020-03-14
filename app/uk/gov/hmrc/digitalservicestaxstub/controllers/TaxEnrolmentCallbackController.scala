@@ -19,6 +19,7 @@ package uk.gov.hmrc.digitalservicestaxstub.controllers
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json._
 import play.api.mvc._
+import play.api.Logger
 import uk.gov.hmrc.digitalservicestaxstub.config.AppConfig
 import uk.gov.hmrc.digitalservicestaxstub.connectors.BackendConnector
 import uk.gov.hmrc.digitalservicestaxstub.models.EnumUtils.idEnum
@@ -27,14 +28,24 @@ import uk.gov.hmrc.play.bootstrap.controller.BackendController
 import uk.gov.hmrc.smartstub._
 import cats.implicits._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
-
 import scala.concurrent.{ExecutionContext, Future}
+import java.time.LocalDateTime
+object TaxEnrolmentCallbackController {
+
+  private[controllers] case class CallbackWrapper(
+    internalId: String, 
+    formBundle: String,
+    timestamp: LocalDateTime = LocalDateTime.now
+  )
+  implicit val formatWrapper = Json.format[CallbackWrapper]
+}
 
 @Singleton
 class TaxEnrolmentCallbackController @Inject()(
   appConfig: AppConfig,
   cc: ControllerComponents,
-  backendConnector: BackendConnector
+  backendConnector: BackendConnector,
+  mongo: play.modules.reactivemongo.ReactiveMongoApi
 )(
   implicit executionContext: ExecutionContext
 ) extends BackendController(cc) {
@@ -71,6 +82,46 @@ class TaxEnrolmentCallbackController @Inject()(
     DesGenerator.genDstRegisterResponse.seeded(seed).map { x =>
       CallbackNotification(x.response.formBundleNumber, "SUCCEEDED")
     }.fold(throw new Exception("bad seed"))(send)
+  }
+
+  def triggerAllRegCallbacks(): Action[AnyContent] = Action.async { implicit request => 
+
+    import reactivemongo.api.Cursor
+    import reactivemongo.api.indexes.{Index, IndexType}
+    import reactivemongo.play.json._, collection._
+    import play.modules.reactivemongo._
+    import mongo.database
+    import TaxEnrolmentCallbackController._
+    lazy val c: Future[JSONCollection] = {
+      database.map(_.collection[JSONCollection]("pending-callbacks")).flatMap { c =>
+
+        val sessionIndex = Index(
+          key = Seq("formBundle" -> IndexType.Ascending),
+          unique = true
+        )
+        
+        c.indexesManager.ensure(sessionIndex).map { case _ => c }
+      }
+    }
+
+    val selector = Json.obj()
+
+    c.flatMap(
+      _.find(selector)
+        .cursor[CallbackWrapper]()
+        .collect[List](        
+          maxDocs = 30,
+          err = Cursor.FailOnError[List[CallbackWrapper]]()
+        ).flatMap { records =>
+          Future.sequence(records.map{
+            case CallbackWrapper(intId, fbNo, time) =>
+              Logger.info(s"Triggering callback for Form bundle: $fbNo")
+              val notification = CallbackNotification(fbNo, "SUCCEEDED")
+              val url = s"/digital-services-tax/tax-enrolment-callback/${notification.url}"
+              backendConnector.bePost[CallbackNotification, Result](url, notification)
+          })
+        }
+    ) >> Future.successful( Ok("Tax enrolments callbacks triggered") )
   }
 
   def getDstRegNo(seed: String) : Action[AnyContent] = Action.async { implicit request =>
