@@ -88,7 +88,7 @@ class DESController @Inject()(
 
   def dstReturn(regNo: String) = AuthAndEnvAction(parse.json) { implicit request =>
     val r: DSTRegistrationResponse = DesGenerator
-      .genDstRegisterResponse
+      .genDstRegisterResponse.map(_.response)
       .sample.get
     Ok(Json.toJson(r))
   }

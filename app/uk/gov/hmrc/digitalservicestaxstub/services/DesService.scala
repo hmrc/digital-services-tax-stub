@@ -28,7 +28,7 @@ class DesService {
   def handleDstRegistration(idType: String, idNumber: String, regData: DSTRegistration): Option[DSTRegistrationResponse] =
     DesGenerator
     .genDstRegisterResponse
-    .seeded(idNumber)
+    .seeded(idNumber).map(_.response)
 
   def handleRosmLookupWithoutIdRequest(data: RosmRegisterWithoutIDRequest): Option[RosmRegisterWitoutIDResponse] =
     DesGenerator

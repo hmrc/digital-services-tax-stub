@@ -121,12 +121,23 @@ object DesGenerator {
     RosmRegisterResponse(safeId, agentReferenceNumber, isEditable, isAnAgent, isAnIndividual, individual, organisation, address, contactDetails)
   }).usually
 
-  def genDstRegisterResponse: Gen[DSTRegistrationResponse] = for {
+  // "^([A-Z]{2}DST[0-9]{10})$"
+  def genDstRegNo: Gen[String] = for {
+    a <- Gen.alphaUpperChar
+    b <- Gen.alphaUpperChar
+    c <- Gen.const("DST")
+    d <- Gen.listOfN(10, Gen.numChar).map(_.mkString)
+  } yield s"$a$b$c$d"
+
+  def genDstRegisterResponse: Gen[RegWrapper] = for {
     formBundleNumber <- genFormBundleNumber
-  } yield DSTRegistrationResponse(
+    dstRegNo <- genDstRegNo
+  } yield RegWrapper(DSTRegistrationResponse(
     LocalDateTime.now.toString,
     formBundleNumber
-  )
+  ), dstRegNo)
+
+  case class RegWrapper(response: DSTRegistrationResponse, dstRegNo: String)
 
 }
 
