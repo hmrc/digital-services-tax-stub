@@ -103,5 +103,17 @@ class DESController @Inject()(
   def getPeriods(dstRegNo: String) = Action {
     Ok(Json.parse(cannedPeriodResponse))
   }
+
+  lazy val cannedFDResponse: String =
+    scala.io.Source.fromInputStream(
+      getClass.getResourceAsStream(
+        "/dst/1166-get-financial-data.response.example1.json"
+      )
+    ).getLines.mkString("\n")
+
+  def getFinancialData(dstRegNo: String) = Action {
+    Ok(Json.parse(cannedFDResponse))
+  }
+
 }
 
