@@ -40,6 +40,6 @@ class BackendConnector @Inject()(
     http.POST[I, O](s"$serviceURL$url", body)(wts, rds, addHeaders, ec)
 
   def addHeaders(implicit hc: HeaderCarrier): HeaderCarrier = {
-    hc.copy(authorization = Some(Authorization(s"Bearer ${servicesConfig.getConfString("digital-service-tax.token", "")}")))
+    hc.copy(authorization = Some(Authorization(s"Bearer ${servicesConfig.getConfString("digital-services-tax.token", "")}")))
   }
 }
