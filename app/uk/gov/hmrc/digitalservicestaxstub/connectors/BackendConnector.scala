@@ -34,7 +34,7 @@ class BackendConnector @Inject()(
   servicesConfig: ServicesConfig
 ) {
 
-  val serviceURL: String = servicesConfig.baseUrl("digital-service-tax")
+  val serviceURL: String = servicesConfig.baseUrl("digital-services-tax")
 
   def bePost[I, O](url: String, body: I)(implicit wts: Writes[I], rds: HttpReads[O], hc: HeaderCarrier, ec: ExecutionContext): Future[O] =
     http.POST[I, O](s"$serviceURL$url", body)(wts, rds, addHeaders, ec)
