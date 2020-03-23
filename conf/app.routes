@@ -8,7 +8,7 @@ POST       /registration/02.00.00/organisation                        uk.gov.hmr
 #Generic subscription
 POST       /cross-regime/subscription/:regime/:idType/:idNumber       uk.gov.hmrc.digitalservicestaxstub.controllers.DESController.dstRegistration(regime, idType, idNumber)
 
-POST /cross-regime/return/DST/eeits/:dstRegNo                         uk.gov.hmrc.digitalservicestaxstub.controllers.DESController.dstReturn(dstRegNo)
+POST /cross-regime/return/DST/zdst/:dstRegNo                          uk.gov.hmrc.digitalservicestaxstub.controllers.DESController.dstReturn(dstRegNo)
 
 GET /enterprise/obligation-data/zdst/:dstRegNo/DST                    uk.gov.hmrc.digitalservicestaxstub.controllers.DESController.getPeriods(dstRegNo)
 
