@@ -21,7 +21,6 @@ case class Address(
   addressLine2: String, // "^[A-Za-z0-9 \\-,.&']{1,35}$"
   addressLine3: String, // "^[A-Za-z0-9 \\-,.&']{1,35}$"
   addressLine4: String, // "^[A-Za-z0-9 \\-,.&']{1,35}$"
-//  addressLine5: String, // "^[A-Za-z0-9 \\-,.&']{1,35}$" // TODO flag
   postalCode: String,
   countryCode: String = "GB"
 )
