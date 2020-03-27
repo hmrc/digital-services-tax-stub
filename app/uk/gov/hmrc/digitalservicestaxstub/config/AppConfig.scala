@@ -27,4 +27,8 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
   val graphiteHost: String     = config.get[String]("microservice.metrics.graphite.host")
+
+  val etmpNotReady: Boolean    = config.getOptional[Boolean]("etmp.notReady").getOrElse(false)
+  val etmpNotReadyStatus: Int  = config.getOptional[Int]("etmp.status").getOrElse(500)
+
 }

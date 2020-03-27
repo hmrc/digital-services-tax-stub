@@ -72,17 +72,21 @@ class DESController @Inject()(
   def dstRegistration(regime: String, idType: String, idNumber: String) = AuthAndEnvAction.async(parse.json) { implicit request =>
 
     withJsonBody[EeittSubscribe]{case EeittSubscribe(regData) =>
-      if (regime.matches("DST"))
-        desService.handleDstRegistration(idType, idNumber, regData) match {
-          case Some(data) => Future successful Ok(Json.toJson(data))
-          case _ => Future successful NotFound(Json.toJson(
-            FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
+
+      if (appConfig.etmpNotReady) Future.successful(Status(appConfig.etmpNotReadyStatus))
+      else {
+        if (regime.matches("DST"))
+          desService.handleDstRegistration(idType, idNumber, regData) match {
+            case Some(data) => Future successful Ok(Json.toJson(data))
+            case _ => Future successful NotFound(Json.toJson(
+              FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
+            )
+          }
+        else
+          Future successful BadRequest(Json.toJson( // TODO look at spec and flesh out, this should be INVALID_REGIME 400
+            FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload."))
           )
-        }
-      else
-        Future successful BadRequest(Json.toJson( // TODO look at spec and flesh out, this should be INVALID_REGIME 400
-          FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload."))
-        )
+      }
     }
   }
 
