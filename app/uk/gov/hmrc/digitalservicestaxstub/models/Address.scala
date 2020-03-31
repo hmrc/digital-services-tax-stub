@@ -18,9 +18,9 @@ package uk.gov.hmrc.digitalservicestaxstub.models
 
 case class Address(
   addressLine1: String,
-  addressLine2: String, // "^[A-Za-z0-9 \\-,.&']{1,35}$"
-  addressLine3: String, // "^[A-Za-z0-9 \\-,.&']{1,35}$"
-  addressLine4: String, // "^[A-Za-z0-9 \\-,.&']{1,35}$"
-  postalCode: String,
+  addressLine2: Option[String], // "^[A-Za-z0-9 \\-,.&']{1,35}$"
+  addressLine3: Option[String], // "^[A-Za-z0-9 \\-,.&']{1,35}$"
+  addressLine4: Option[String], // "^[A-Za-z0-9 \\-,.&']{1,35}$"
+  postalCode: Option[String],
   countryCode: String = "GB"
 )
