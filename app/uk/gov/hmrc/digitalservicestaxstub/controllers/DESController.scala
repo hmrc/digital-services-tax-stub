@@ -73,7 +73,9 @@ class DESController @Inject()(
 
     withJsonBody[EeittSubscribe]{case EeittSubscribe(regData) =>
 
-      if (appConfig.etmpNotReady) Future.successful(Status(appConfig.etmpNotReadyStatus))
+      if (appConfig.etmpNotReady) {
+        Future.successful(Status(appConfig.etmpNotReadyStatus))
+      }
       else {
         if (regime.matches("DST"))
           desService.handleDstRegistration(idType, idNumber, regData) match {
