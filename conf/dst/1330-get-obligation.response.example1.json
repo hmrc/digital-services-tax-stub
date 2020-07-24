@@ -21,6 +21,14 @@
 					"inboundCorrespondenceToDate": "1922-03-29",
 					"inboundCorrespondenceDueDate": "1922-04-29",
 					"periodKey": "002"
+				},
+				{
+					"status": "O",
+					"inboundCorrespondenceFromDate": "2020-02-29",
+					"inboundCorrespondenceToDate": "2021-01-29",
+					"inboundCorrespondenceDateReceived": "2020-01-29",
+					"inboundCorrespondenceDueDate": "2021-01-29",
+					"periodKey": "003"
 				}
 			]
 		}
