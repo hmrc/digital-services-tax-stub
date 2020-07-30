@@ -9,26 +9,33 @@
 			"obligationDetails": [
 				{
 					"status": "O",
-					"inboundCorrespondenceFromDate": "1920-02-29",
-					"inboundCorrespondenceToDate": "1921-01-29",
-					"inboundCorrespondenceDateReceived": "1921-01-29",
-					"inboundCorrespondenceDueDate": "1921-01-29",
+					"inboundCorrespondenceFromDate": "2018-02-28",
+					"inboundCorrespondenceToDate": "2019-02-28",
+					"inboundCorrespondenceDateReceived": "2020-01-24",
+					"inboundCorrespondenceDueDate": "2020-02-28",
 					"periodKey": "001"
 				},
 				{
 					"status": "O",
-					"inboundCorrespondenceFromDate": "1921-01-29",
-					"inboundCorrespondenceToDate": "1922-03-29",
-					"inboundCorrespondenceDueDate": "1922-04-29",
+					"inboundCorrespondenceFromDate": "2019-02-28",
+					"inboundCorrespondenceToDate": "2020-02-28",
+					"inboundCorrespondenceDateReceived": "2021-01-24",
+					"inboundCorrespondenceDueDate": "2021-02-28",
 					"periodKey": "002"
 				},
 				{
 					"status": "O",
-					"inboundCorrespondenceFromDate": "2020-02-29",
-					"inboundCorrespondenceToDate": "2021-01-29",
-					"inboundCorrespondenceDateReceived": "2020-01-29",
-					"inboundCorrespondenceDueDate": "2021-01-29",
+					"inboundCorrespondenceFromDate": "2020-02-28",
+					"inboundCorrespondenceToDate": "2021-02-28",
+					"inboundCorrespondenceDueDate": "2022-02-28",
 					"periodKey": "003"
+				},
+				{
+					"status": "O",
+					"inboundCorrespondenceFromDate": "2021-02-28",
+					"inboundCorrespondenceToDate": "2022-01-28",
+					"inboundCorrespondenceDueDate": "2023-01-28",
+					"periodKey": "004"
 				}
 			]
 		}
