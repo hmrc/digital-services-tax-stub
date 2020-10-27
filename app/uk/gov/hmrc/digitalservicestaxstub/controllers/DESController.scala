@@ -113,7 +113,7 @@ class DESController @Inject()(
   lazy val cannedFDResponse: String =
     scala.io.Source.fromInputStream(
       getClass.getResourceAsStream(
-        "/dst/1166-get-financial-data.response.example1.json"
+        "/dst/1166-get-financial-data.response.example2.json"
       )
     ).getLines.mkString("\n")
 
