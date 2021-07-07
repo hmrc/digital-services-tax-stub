@@ -19,7 +19,7 @@ package uk.gov.hmrc.digitalservicestaxstub.connectors
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Writes
 import play.api.{Configuration, Environment}
-import uk.gov.hmrc.http.logging.Authorization
+import uk.gov.hmrc.http.Authorization
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.HttpClient

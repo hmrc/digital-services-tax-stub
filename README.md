@@ -1,7 +1,5 @@
 # Digital Services Tax Stub
 
-[ ![Download](https://api.bintray.com/packages/hmrc/releases/digital-services-tax-stub/images/download.svg) ](https://bintray.com/hmrc/releases/digital-services-tax-stub/_latestVersion)
-
 ## About
 The Digital Services Tax (DST) digital service is split into a number of different microservices all serving specific functions which are listed below:
 
