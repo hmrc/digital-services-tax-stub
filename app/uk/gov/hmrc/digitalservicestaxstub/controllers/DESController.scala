@@ -117,9 +117,5 @@ class DESController @Inject()(
       )
     ).getLines.mkString("\n")
 
-  def getFinancialData(dstRegNo: String) = Action {
-    Ok(Json.parse(cannedFDResponse))
-  }
-
 }
 
