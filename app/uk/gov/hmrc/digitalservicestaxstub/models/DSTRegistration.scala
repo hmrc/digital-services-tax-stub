@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.models
 
-import java.time.LocalDate
-
 import play.api.libs.json.Json
 
 case class LegalEntity(

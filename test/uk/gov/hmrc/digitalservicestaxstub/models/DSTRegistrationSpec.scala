@@ -16,14 +16,16 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.models
 
-import org.scalatest.{Matchers, FlatSpec}
-import scala.io.Source.fromInputStream
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import play.api.libs.json._
-import uk.gov.hmrc.digitalservicestaxstub.models._
 
-class DSTRegistrationSpec extends FlatSpec with Matchers {
+import scala.io.Source.fromInputStream
 
-  "The example JSON payload" should "parse into a DSTRegistration object" in {
+class DSTRegistrationSpec extends AnyFlatSpec with Matchers {
+
+  "The example JSON payload" should
+    "parse into a DSTRegistration object" in {
 
     val jsonText: String = {
       val stream = getClass.getResourceAsStream(
@@ -33,10 +35,9 @@ class DSTRegistrationSpec extends FlatSpec with Matchers {
     }
 
     val json: JsValue = Json.parse(jsonText)
-//    println(json)
     val obj = {json \ "registrationDetails"}.as[DSTRegistration]
 
-    true shouldBe true
+    assert(obj.isInstanceOf[DSTRegistration])
   }
 
 }

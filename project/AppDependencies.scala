@@ -5,16 +5,18 @@ import sbt._
 
 object AppDependencies {
 
+  val hmrcBootstrapVersion = "5.14.0"
+
   val compile = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-play-26"        % "4.0.0",
-    "uk.gov.hmrc"             %% "stub-data-generator"      % "0.5.3"
+    "uk.gov.hmrc"             %% "bootstrap-backend-play-28" % hmrcBootstrapVersion,
+    "uk.gov.hmrc"             %% "stub-data-generator"       % "0.5.3"
   )
 
   val test = Seq(
-    "org.scalatest"           %% "scalatest"                % "3.0.8"                 % "test",
+    "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % hmrcBootstrapVersion    % "test",
     "com.typesafe.play"       %% "play-test"                % current                 % "test",
-    "org.pegdown"             %  "pegdown"                  % "1.6.0"                 % "test, it",
-    "org.scalatestplus.play"  %% "scalatestplus-play"       % "3.1.2"                 % "test, it"
+    "com.vladsch.flexmark"    % "flexmark-all"              % "0.36.8"                % "test",
+    "org.pegdown"             %  "pegdown"                  % "1.6.0"                 % "test, it"
   )
 
 }
