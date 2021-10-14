@@ -23,7 +23,7 @@ import uk.gov.hmrc.digitalservicestaxstub.config.AppConfig
 import uk.gov.hmrc.digitalservicestaxstub.connectors.BackendConnector
 import uk.gov.hmrc.digitalservicestaxstub.models.EnumUtils.idEnum
 import uk.gov.hmrc.digitalservicestaxstub.services.DesGenerator
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.smartstub._
 import cats.implicits._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
@@ -73,7 +73,7 @@ class TaxEnrolmentCallbackController @Inject()(
     }.fold(throw new Exception("bad seed"))(send)
   }
 
-  def getDstRegNo(seed: String) : Action[AnyContent] = Action.async { implicit request =>
+  def getDstRegNo(seed: String) : Action[AnyContent] = Action.async {
     DesGenerator.genDstRegisterResponse.seeded(seed).map { x =>
       x.dstRegNo
     }.fold(throw new Exception("bad seed")) { y =>

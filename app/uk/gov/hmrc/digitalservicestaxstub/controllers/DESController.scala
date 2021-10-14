@@ -19,11 +19,11 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action, ControllerComponents}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import config.AppConfig
 import models._
-import services.{DesService, DesGenerator}
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
+import services.{DesGenerator, DesService}
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.Future
 
@@ -69,30 +69,33 @@ class DESController @Inject()(
   }
 
 
-  def dstRegistration(regime: String, idType: String, idNumber: String) = AuthAndEnvAction.async(parse.json) { implicit request =>
+  def dstRegistration(
+    regime: String,
+    idType: String,
+    idNumber: String
+  ): Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
+      withJsonBody[EeittSubscribe] { case EeittSubscribe(regData) =>
 
-    withJsonBody[EeittSubscribe]{case EeittSubscribe(regData) =>
-
-      if (appConfig.etmpNotReady) {
-        Future.successful(Status(appConfig.etmpNotReadyStatus))
-      }
-      else {
-        if (regime.matches("DST"))
-          desService.handleDstRegistration(idType, idNumber, regData) match {
-            case Some(data) => Future successful Ok(Json.toJson(data))
-            case _ => Future successful NotFound(Json.toJson(
-              FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
+        if (appConfig.etmpNotReady) {
+          Future.successful(Status(appConfig.etmpNotReadyStatus))
+        }
+        else {
+          if (regime.matches("DST"))
+            desService.handleDstRegistration(idType, idNumber, regData) match {
+              case Some(data) => Future successful Ok(Json.toJson(data))
+              case _ => Future successful NotFound(Json.toJson(
+                FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
+              )
+            }
+          else
+            Future successful BadRequest(Json.toJson(
+              FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload."))
             )
-          }
-        else
-          Future successful BadRequest(Json.toJson( // TODO look at spec and flesh out, this should be INVALID_REGIME 400
-            FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload."))
-          )
+        }
       }
-    }
   }
 
-  def dstReturn(regNo: String) = AuthAndEnvAction(parse.json) { implicit request =>
+  def dstReturn(regNo: String): Action[AnyContent] = AuthAndEnvAction(parse.json) {
     val r: DSTRegistrationResponse = DesGenerator
       .genDstRegisterResponse.map(_.response)
       .sample.get
@@ -106,16 +109,9 @@ class DESController @Inject()(
       )
     ).getLines.mkString("\n")
 
-  def getPeriods(dstRegNo: String) = Action {
+  def getPeriods(dstRegNo: String): Action[AnyContent] = Action {
     Ok(Json.parse(cannedPeriodResponse))
   }
-
-  lazy val cannedFDResponse: String =
-    scala.io.Source.fromInputStream(
-      getClass.getResourceAsStream(
-        "/dst/1166-get-financial-data.response.example1.json"
-      )
-    ).getLines.mkString("\n")
 
 }
 

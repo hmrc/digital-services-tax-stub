@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.controllers
 
-import play.api.libs.json.{Format, Json, OFormat}
+import play.api.libs.json.{Format, Json}
 
 case class DstRegNoWrapper(dstRegNo: String)
 case object DstRegNoWrapper {
