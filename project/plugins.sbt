@@ -7,4 +7,4 @@ addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "3.8.0")
 
 addSbtPlugin("uk.gov.hmrc" % "sbt-distributables" % "2.1.0")
 
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.8.17")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.8.18")
