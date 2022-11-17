@@ -28,7 +28,7 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import scala.concurrent.Future
 
 @Singleton()
-class DESController @Inject()(
+class DESController @Inject() (
   appConfig: AppConfig,
   cc: ControllerComponents,
   AuthAndEnvAction: AuthAndEnvAction,
@@ -36,20 +36,20 @@ class DESController @Inject()(
 ) extends BackendController(cc) {
 
   def rosmLookupWithoutID: Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
-    withJsonBody[RosmRegisterWithoutIDRequest](rosmRequest => {
+    withJsonBody[RosmRegisterWithoutIDRequest] { rosmRequest =>
       if (rosmRequest.regime.matches("DST"))
         desService.handleRosmLookupWithoutIdRequest(rosmRequest) match {
           case Some(data) => Future successful Ok(Json.toJson(data))
-          case _ => Future successful NotFound(Json.toJson(
-            FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
-          )
+          case _          =>
+            Future successful NotFound(
+              Json.toJson(FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
+            )
         }
       else
-        Future successful BadRequest(Json.toJson(
-          FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload"))
+        Future successful BadRequest(
+          Json.toJson(FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload"))
         )
-      }
-    )
+    }
   }
 
   def rosmLookupWithId(utr: String): Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
@@ -57,61 +57,60 @@ class DESController @Inject()(
       if (rosmRequest.regime.matches("DST"))
         desService.handleRosmLookupWithIdRequest(rosmRequest, utr) match {
           case Some(data) => Future successful Ok(Json.toJson(data))
-          case _ => Future successful NotFound(Json.toJson(
-            FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
-          )
+          case _          =>
+            Future successful NotFound(
+              Json.toJson(FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
+            )
         }
       else
-        Future successful BadRequest(Json.toJson(
-          FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload."))
+        Future successful BadRequest(
+          Json.toJson(FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload."))
         )
     )
   }
-
 
   def dstRegistration(
     regime: String,
     idType: String,
     idNumber: String
   ): Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
-      withJsonBody[EeittSubscribe] { case EeittSubscribe(regData) =>
-
-        if (appConfig.etmpNotReady) {
-          Future.successful(Status(appConfig.etmpNotReadyStatus))
-        }
-        else {
-          if (regime.matches("DST"))
-            desService.handleDstRegistration(idType, idNumber, regData) match {
-              case Some(data) => Future successful Ok(Json.toJson(data))
-              case _ => Future successful NotFound(Json.toJson(
-                FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
+    withJsonBody[EeittSubscribe] { case EeittSubscribe(regData) =>
+      if (appConfig.etmpNotReady) {
+        Future.successful(Status(appConfig.etmpNotReadyStatus))
+      } else {
+        if (regime.matches("DST"))
+          desService.handleDstRegistration(idType, idNumber, regData) match {
+            case Some(data) => Future successful Ok(Json.toJson(data))
+            case _          =>
+              Future successful NotFound(
+                Json.toJson(FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
               )
-            }
-          else
-            Future successful BadRequest(Json.toJson(
-              FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload."))
-            )
-        }
+          }
+        else
+          Future successful BadRequest(
+            Json.toJson(FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload."))
+          )
       }
+    }
   }
 
   def dstReturn(regNo: String): Action[AnyContent] = AuthAndEnvAction(parse.json) {
-    val r: DSTRegistrationResponse = DesGenerator
-      .genDstRegisterResponse.map(_.response)
-      .sample.get
+    val r: DSTRegistrationResponse = DesGenerator.genDstRegisterResponse.map(_.response).sample.get
     Ok(Json.toJson(r))
   }
 
   lazy val cannedPeriodResponse: String =
-    scala.io.Source.fromInputStream(
-      getClass.getResourceAsStream(
-        "/dst/1330-get-obligation.response.example1.json"
+    scala.io.Source
+      .fromInputStream(
+        getClass.getResourceAsStream(
+          "/dst/1330-get-obligation.response.example1.json"
+        )
       )
-    ).getLines.mkString("\n")
+      .getLines
+      .mkString("\n")
 
   def getPeriods(dstRegNo: String): Action[AnyContent] = Action {
     Ok(Json.parse(cannedPeriodResponse))
   }
 
 }
-

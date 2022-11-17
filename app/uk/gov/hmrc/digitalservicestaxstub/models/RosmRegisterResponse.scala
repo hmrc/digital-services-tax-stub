@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.models
 
-
 case class RosmRegisterResponse(
   safeId: String,
   agentReferenceNumber: Option[String],

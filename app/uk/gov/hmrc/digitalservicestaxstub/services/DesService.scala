@@ -25,21 +25,29 @@ import cats.implicits._
 @Singleton
 class DesService {
 
-  def handleDstRegistration(idType: String, idNumber: String, regData: DSTRegistration): Option[DSTRegistrationResponse] =
-    DesGenerator
-    .genDstRegisterResponse
-    .seeded(idNumber).map(_.response)
+  def handleDstRegistration(
+    idType: String,
+    idNumber: String,
+    regData: DSTRegistration
+  ): Option[DSTRegistrationResponse] =
+    DesGenerator.genDstRegisterResponse
+      .seeded(idNumber)
+      .map(_.response)
 
   def handleRosmLookupWithoutIdRequest(data: RosmRegisterWithoutIDRequest): Option[RosmRegisterWitoutIDResponse] =
     DesGenerator
       .genRosmRegisterWithoutIDResponse(data)
       .seeded(
         data.organisation
-          .fold("1")(_.organisationName).map(_.toInt).sum.toLong).get.some
+          .fold("1")(_.organisationName)
+          .map(_.toInt)
+          .sum
+          .toLong
+      )
+      .get
+      .some
 
-  def handleRosmLookupWithIdRequest(data: RosmRegisterRequest, utr: String): Option[RosmRegisterResponse] = {
+  def handleRosmLookupWithIdRequest(data: RosmRegisterRequest, utr: String): Option[RosmRegisterResponse] =
     DesGenerator.genRosmRegisterResponse(data, utr).seeded(utr).get
-  }
 
 }
-

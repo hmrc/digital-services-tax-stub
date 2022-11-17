@@ -39,8 +39,8 @@ case class OrganisationRequest(
 )
 
 object RosmOrganisationType extends Enumeration {
-  val Partnership, LLP = Value
-  val CorporateBody = Value("Corporate body")
+  val Partnership, LLP   = Value
+  val CorporateBody      = Value("Corporate body")
   val UnincorporatedBody = Value("Unincorporated body")
-  val Unknown = Value("Not Specified")
+  val Unknown            = Value("Not Specified")
 }

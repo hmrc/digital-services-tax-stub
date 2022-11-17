@@ -27,19 +27,17 @@ class DSTRegistrationSpec extends AnyFlatSpec with Matchers {
   "The example JSON payload" should
     "parse into a DSTRegistration object" in {
 
-    val jsonText: String = {
-      val stream = getClass.getResourceAsStream(
-        "/dst/1479-eeitt-subscribe.request.example1.json"
-      )
-      fromInputStream( stream ).getLines.mkString("\n")
+      val jsonText: String = {
+        val stream = getClass.getResourceAsStream(
+          "/dst/1479-eeitt-subscribe.request.example1.json"
+        )
+        fromInputStream(stream).getLines.mkString("\n")
+      }
+
+      val json: JsValue = Json.parse(jsonText)
+      val obj           = { json \ "registrationDetails" }.as[DSTRegistration]
+
+      assert(obj.isInstanceOf[DSTRegistration])
     }
 
-    val json: JsValue = Json.parse(jsonText)
-    val obj = {json \ "registrationDetails"}.as[DSTRegistration]
-
-    assert(obj.isInstanceOf[DSTRegistration])
-  }
-
 }
-
-

@@ -31,12 +31,12 @@ import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TaxEnrolmentCallbackController @Inject()(
+class TaxEnrolmentCallbackController @Inject() (
   appConfig: AppConfig,
   cc: ControllerComponents,
   backendConnector: BackendConnector
-)(
-  implicit executionContext: ExecutionContext
+)(implicit
+  executionContext: ExecutionContext
 ) extends BackendController(cc) {
 
   case class CallbackNotification(url: String, state: String, errorResponse: Option[String] = None)
@@ -47,15 +47,14 @@ class TaxEnrolmentCallbackController @Inject()(
       new Format[Option[A]] {
         def reads(json: JsValue): JsResult[Option[A]] = json match {
           case JsNull => JsSuccess(none[A])
-          case a      => innerFormatter.reads(a).map{_.some}
+          case a      => innerFormatter.reads(a).map(_.some)
         }
-        def writes(o: Option[A]): JsValue =
-          o.map{innerFormatter.writes}.getOrElse(JsNull)
+        def writes(o: Option[A]): JsValue             =
+          o.map(innerFormatter.writes).getOrElse(JsNull)
       }
 
     implicit val format: Format[CallbackNotification] = Json.format[CallbackNotification]
   }
-
 
   implicit val w = new HttpReads[Result] {
     override def read(method: String, url: String, response: HttpResponse): Result = NoContent
@@ -63,22 +62,32 @@ class TaxEnrolmentCallbackController @Inject()(
 
   private def send(notification: CallbackNotification)(implicit request: Request[AnyContent]): Future[Result] =
     backendConnector
-      .bePost[CallbackNotification, Result](s"/digital-services-tax/tax-enrolment-callback/${notification.url}", notification).map { _ =>
-      Ok("Tax enrolments callback triggered")
-    }
+      .bePost[CallbackNotification, Result](
+        s"/digital-services-tax/tax-enrolment-callback/${notification.url}",
+        notification
+      )
+      .map { _ =>
+        Ok("Tax enrolments callback triggered")
+      }
 
   def trigger(seed: String): Action[AnyContent] = Action.async { implicit request =>
-    DesGenerator.genDstRegisterResponse.seeded(seed).map { x =>
-      CallbackNotification(x.response.formBundleNumber, "SUCCEEDED")
-    }.fold(throw new Exception("bad seed"))(send)
+    DesGenerator.genDstRegisterResponse
+      .seeded(seed)
+      .map { x =>
+        CallbackNotification(x.response.formBundleNumber, "SUCCEEDED")
+      }
+      .fold(throw new Exception("bad seed"))(send)
   }
 
-  def getDstRegNo(seed: String) : Action[AnyContent] = Action.async {
-    DesGenerator.genDstRegisterResponse.seeded(seed).map { x =>
-      x.dstRegNo
-    }.fold(throw new Exception("bad seed")) { y =>
-      Future(Ok(Json.toJson(DstRegNoWrapper(y))))
-    }
+  def getDstRegNo(seed: String): Action[AnyContent] = Action.async {
+    DesGenerator.genDstRegisterResponse
+      .seeded(seed)
+      .map { x =>
+        x.dstRegNo
+      }
+      .fold(throw new Exception("bad seed")) { y =>
+        Future(Ok(Json.toJson(DstRegNoWrapper(y))))
+      }
   }
 
 }
