@@ -56,21 +56,20 @@ case class DSTRegistration(
   isrScenario: String,
   commonDetails: CommonDetails,
   regimeSpecificDetails: List[Params]
-
 )
 
 case object DSTRegistration {
   implicit val bcdformat = Json.format[BusinessContactDetails]
-  implicit val leformat = Json.format[LegalEntity]
+  implicit val leformat  = Json.format[LegalEntity]
   implicit val cinformat = Json.format[CustomerIdentificationNumber]
-  implicit val cdformat = Json.format[CommonDetails]
-  implicit val pformat = Json.format[Params]
-  implicit val format = Json.format[DSTRegistration]
+  implicit val cdformat  = Json.format[CommonDetails]
+  implicit val pformat   = Json.format[Params]
+  implicit val format    = Json.format[DSTRegistration]
 }
 
 case class EeittSubscribe(
-  registrationDetails: DSTRegistration //,
-//  siteDetails: SiteDetails // if needed? 
+  registrationDetails: DSTRegistration // ,
+//  siteDetails: SiteDetails // if needed?
 )
 
 object EeittSubscribe {

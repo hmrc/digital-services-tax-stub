@@ -23,28 +23,27 @@ import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait ExtraActions extends ActionBuilder[Request,AnyContent] with ActionFilter[Request] {
+trait ExtraActions extends ActionBuilder[Request, AnyContent] with ActionFilter[Request] {
   val controllerComponents: ControllerComponents
-  override def parser: BodyParser[AnyContent] = controllerComponents.parsers.defaultBodyParser
+  override def parser: BodyParser[AnyContent]               = controllerComponents.parsers.defaultBodyParser
   override protected def executionContext: ExecutionContext = controllerComponents.executionContext
 }
 
-class AuthAndEnvAction @Inject()(cc: ControllerComponents) extends ExtraActions {
+class AuthAndEnvAction @Inject() (cc: ControllerComponents) extends ExtraActions {
 
-  override val controllerComponents: ControllerComponents = cc
-  override protected def filter[A](request: Request[A]): Future[Option[Result]] = {
+  override val controllerComponents: ControllerComponents                       = cc
+  override protected def filter[A](request: Request[A]): Future[Option[Result]] =
     Future.successful(
       (request.headers.get(HeaderNames.AUTHORIZATION), request.headers.get("Environment")) match {
-        case (None, _) =>
+        case (None, _)                                         =>
           Some(Unauthorized(""))
-        case (_, None) =>
+        case (_, None)                                         =>
           Some(Forbidden(""))
         case (_, Some(x)) if !x.matches("^(ist0|clone|live)$") =>
           Some(Forbidden(""))
-        case _ =>
+        case _                                                 =>
           None
       }
     )
-  }
 
 }

@@ -19,4 +19,3 @@ package uk.gov.hmrc.digitalservicestaxstub.models
 case class RosmRegisterWithoutIDOrganisation(
   organisationName: String
 )
-
