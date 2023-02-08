@@ -15,3 +15,5 @@ GET /enterprise/obligation-data/zdst/:dstRegNo/DST                    uk.gov.hmr
 GET /trigger/callback/te/:seed                                        uk.gov.hmrc.digitalservicestaxstub.controllers.TaxEnrolmentCallbackController.trigger(seed)
 
 GET /get-subscription/:seed                                           uk.gov.hmrc.digitalservicestaxstub.controllers.TaxEnrolmentCallbackController.getDstRegNo(seed)
+
+GET /tax-enrolments/groups/:groupId/subscriptions                     uk.gov.hmrc.digitalservicestaxstub.controllers.TaxEnrolmentCallbackController.getSubscriptionByGroupId(groupId)
