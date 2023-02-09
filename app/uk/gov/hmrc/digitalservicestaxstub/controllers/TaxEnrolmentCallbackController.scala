@@ -16,18 +16,20 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.controllers
 
-import javax.inject.{Inject, Singleton}
+import cats.implicits._
 import play.api.libs.json._
 import play.api.mvc._
 import uk.gov.hmrc.digitalservicestaxstub.config.AppConfig
 import uk.gov.hmrc.digitalservicestaxstub.connectors.BackendConnector
 import uk.gov.hmrc.digitalservicestaxstub.models.EnumUtils.idEnum
+import uk.gov.hmrc.digitalservicestaxstub.models.{Identifier, TaxEnrolmentsSubscription}
 import uk.gov.hmrc.digitalservicestaxstub.services.DesGenerator
+import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.smartstub._
-import cats.implicits._
-import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 
+import scala.collection.immutable.Seq
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -88,6 +90,29 @@ class TaxEnrolmentCallbackController @Inject() (
       .fold(throw new Exception("bad seed")) { y =>
         Future(Ok(Json.toJson(DstRegNoWrapper(y))))
       }
+  }
+
+  def getSubscriptionByGroupId(groupId: String): Action[AnyContent] = Action.async {
+    val dstRegNo = DesGenerator.genDstRegNo.sample.getOrElse("TIDST7844051876")
+    groupId match {
+      case "12345" =>
+        Future.successful(
+          Ok(Json.toJson(TaxEnrolmentsSubscription(Some(Seq(Identifier("DSTRefNumber", dstRegNo))), "SUCCEEDED", None)))
+        )
+      case "11111" =>
+        Future.successful(
+          Ok(Json.toJson(TaxEnrolmentsSubscription(Some(Seq(Identifier("DSTRefNumber", dstRegNo))), "PENDING", None)))
+        )
+      case "22222" =>
+        Future.successful(
+          Ok(
+            Json.toJson(
+              TaxEnrolmentsSubscription(None, "ERROR", Some("It is an error"))
+            )
+          )
+        )
+      case _       => Future.successful(BadRequest)
+    }
   }
 
 }
