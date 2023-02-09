@@ -23,10 +23,12 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.http.Status.BAD_REQUEST
 import play.api.mvc.{Action, AnyContent, ControllerComponents, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{OK, defaultAwaitTimeout, status, stubControllerComponents}
+import play.api.test.Helpers.{OK, contentAsJson, defaultAwaitTimeout, status, stubControllerComponents}
 import uk.gov.hmrc.digitalservicestaxstub.config.AppConfig
 import uk.gov.hmrc.digitalservicestaxstub.connectors.BackendConnector
+import uk.gov.hmrc.digitalservicestaxstub.models.{Identifier, TaxEnrolmentsSubscription}
 
+import scala.collection.immutable.Seq
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -39,9 +41,28 @@ class TaxEnrolmentCallbackControllerSpec extends AnyFreeSpec with GuiceOneServer
   def controller                    = new TaxEnrolmentCallbackController(appConfig = appConfig, cc = cc, backendConnector = connector)
 
   "TaxEnrolmentCallbackController" - {
-    "must return OK for the input groupId" in {
-      val result: Future[Result] = controller.getSubscriptionByGroupId("12345")(request)
+    "must return OK and state as 'SUCCEEDED' for the input groupId" in {
+      val result: Future[Result]    = controller.getSubscriptionByGroupId("12345")(request)
       status(result) mustBe OK
+      val taxEnrolmentsSubscription = contentAsJson(result).as[TaxEnrolmentsSubscription]
+      taxEnrolmentsSubscription.state mustBe "SUCCEEDED"
+      taxEnrolmentsSubscription.identifiers.isDefined mustBe true
+    }
+
+    "must return OK and state as 'PENDING' for the input groupId" in {
+      val result: Future[Result]    = controller.getSubscriptionByGroupId("11111")(request)
+      status(result) mustBe OK
+      val taxEnrolmentsSubscription = contentAsJson(result).as[TaxEnrolmentsSubscription]
+      taxEnrolmentsSubscription.state mustBe "PENDING"
+      taxEnrolmentsSubscription.identifiers.isDefined mustBe true
+    }
+
+    "must return OK and state as 'ERROR' for the input groupId" in {
+      val result: Future[Result]    = controller.getSubscriptionByGroupId("22222")(request)
+      status(result) mustBe OK
+      val taxEnrolmentsSubscription = contentAsJson(result).as[TaxEnrolmentsSubscription]
+      taxEnrolmentsSubscription.state mustBe "ERROR"
+      taxEnrolmentsSubscription.identifiers.isDefined mustBe false
     }
 
     "must return BadRequest for the input groupId 888888" in {

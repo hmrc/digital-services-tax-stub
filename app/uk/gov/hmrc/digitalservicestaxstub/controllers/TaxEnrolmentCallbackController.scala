@@ -107,7 +107,7 @@ class TaxEnrolmentCallbackController @Inject() (
         Future.successful(
           Ok(
             Json.toJson(
-              TaxEnrolmentsSubscription(Some(Seq(Identifier("RefNumber", dstRegNo))), "ERROR", Some("It is an error"))
+              TaxEnrolmentsSubscription(None, "ERROR", Some("It is an error"))
             )
           )
         )
