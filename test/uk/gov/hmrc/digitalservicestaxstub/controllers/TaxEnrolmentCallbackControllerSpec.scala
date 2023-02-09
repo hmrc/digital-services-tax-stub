@@ -32,11 +32,11 @@ import scala.concurrent.Future
 
 class TaxEnrolmentCallbackControllerSpec extends AnyFreeSpec with GuiceOneServerPerSuite with Matchers {
 
-  val connector: BackendConnector = mock[BackendConnector]
-  val appConfig: AppConfig =  app.injector.instanceOf[AppConfig]
+  val connector: BackendConnector   = mock[BackendConnector]
+  val appConfig: AppConfig          = app.injector.instanceOf[AppConfig]
   lazy val cc: ControllerComponents = stubControllerComponents()
-  val request = FakeRequest("","")
-  def controller = new TaxEnrolmentCallbackController(appConfig = appConfig, cc = cc, backendConnector = connector)
+  val request                       = FakeRequest("", "")
+  def controller                    = new TaxEnrolmentCallbackController(appConfig = appConfig, cc = cc, backendConnector = connector)
 
   "TaxEnrolmentCallbackController" - {
     "must return OK for the input groupId" in {

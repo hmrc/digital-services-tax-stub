@@ -95,10 +95,19 @@ class TaxEnrolmentCallbackController @Inject() (
   def getSubscriptionByGroupId(groupId: String): Action[AnyContent] = Action.async {
     val dstRegNo = DesGenerator.genDstRegNo.sample.getOrElse("TIDST7844051876")
     groupId match {
-      case "12345" => Future.successful(Ok(Json.toJson(TaxEnrolmentsSubscription(Some(Seq(Identifier("DSTRefNumber", dstRegNo))), "SUCCEEDED", None))))
-      case "11111" => Future.successful(Ok(Json.toJson(TaxEnrolmentsSubscription(Some(Seq(Identifier("DSTRefNumber", dstRegNo))), "PENDING", None))))
-      case "22222" => Future.successful(Ok(Json.toJson(TaxEnrolmentsSubscription(Some(Seq(Identifier("RefNumber", dstRegNo))), "ERROR", None))))
-      case _ => Future.successful(BadRequest)
+      case "12345" =>
+        Future.successful(
+          Ok(Json.toJson(TaxEnrolmentsSubscription(Some(Seq(Identifier("DSTRefNumber", dstRegNo))), "SUCCEEDED", None)))
+        )
+      case "11111" =>
+        Future.successful(
+          Ok(Json.toJson(TaxEnrolmentsSubscription(Some(Seq(Identifier("DSTRefNumber", dstRegNo))), "PENDING", None)))
+        )
+      case "22222" =>
+        Future.successful(
+          Ok(Json.toJson(TaxEnrolmentsSubscription(Some(Seq(Identifier("RefNumber", dstRegNo))), "ERROR", None)))
+        )
+      case _       => Future.successful(BadRequest)
     }
   }
 
