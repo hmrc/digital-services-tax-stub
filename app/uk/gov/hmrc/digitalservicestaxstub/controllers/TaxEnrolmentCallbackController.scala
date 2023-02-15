@@ -28,8 +28,8 @@ import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.smartstub._
 
-import scala.collection.immutable.Seq
 import javax.inject.{Inject, Singleton}
+import scala.collection.immutable.Seq
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -81,10 +81,11 @@ class TaxEnrolmentCallbackController @Inject() (
       .fold(throw new Exception("bad seed"))(send)
   }
 
-  def getDstRegNo(seed: String): Action[AnyContent] = Action.async {
+  def getDstRegNo(seed: String): Action[AnyContent] = Action.async { request =>
     DesGenerator.genDstRegisterResponse
       .seeded(seed)
       .map { x =>
+        request.session.+("dstRegistrationNumber", x.dstRegNo)
         x.dstRegNo
       }
       .fold(throw new Exception("bad seed")) { y =>
@@ -92,8 +93,8 @@ class TaxEnrolmentCallbackController @Inject() (
       }
   }
 
-  def getSubscriptionByGroupId(groupId: String): Action[AnyContent] = Action.async {
-    val dstRegNo = DesGenerator.genDstRegNo.sample.getOrElse("TIDST7844051876")
+  def getSubscriptionByGroupId(groupId: String): Action[AnyContent] = Action.async { request =>
+    val dstRegNo = request.session.get("dstRegistrationNumber").getOrElse("AMDST0799721562")
     groupId match {
       case "12345" =>
         Future.successful(
