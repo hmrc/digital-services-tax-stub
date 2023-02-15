@@ -73,7 +73,6 @@ class TaxEnrolmentCallbackController @Inject() (
       }
 
   def trigger(seed: String): Action[AnyContent] = Action.async { implicit request =>
-    println("====trigger====================" + seed)
     DesGenerator.genDstRegisterResponse
       .seeded(seed)
       .map { x =>
