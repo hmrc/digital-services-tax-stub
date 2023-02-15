@@ -77,7 +77,6 @@ class TaxEnrolmentCallbackController @Inject() (
     DesGenerator.genDstRegisterResponse
       .seeded(seed)
       .map { x =>
-        println("====trigger====xxxx================" + x)
         CallbackNotification(x.response.formBundleNumber, "SUCCEEDED")
       }
       .fold(throw new Exception("bad seed"))(send)
@@ -87,7 +86,6 @@ class TaxEnrolmentCallbackController @Inject() (
     DesGenerator.genDstRegisterResponse
       .seeded(seed)
       .map { x =>
-        println("===================" + x)
         request.session.+("dstRegistrationNumber", x.dstRegNo)
         x.dstRegNo
       }
