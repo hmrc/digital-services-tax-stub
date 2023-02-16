@@ -98,17 +98,25 @@ class TaxEnrolmentCallbackController @Inject() (
     groupId match {
       case "12345" =>
         Future.successful(
-          Ok(Json.toJson(TaxEnrolmentsSubscription(Some(Seq(Identifier("DSTRefNumber", dstRegNo))), "SUCCEEDED", None)))
+          Ok(
+            Json.toJson(
+              Seq(TaxEnrolmentsSubscription(Some(Seq(Identifier("DSTRefNumber", dstRegNo))), "SUCCEEDED", None))
+            )
+          )
         )
       case "11111" =>
         Future.successful(
-          Ok(Json.toJson(TaxEnrolmentsSubscription(Some(Seq(Identifier("DSTRefNumber", dstRegNo))), "PENDING", None)))
+          Ok(
+            Json.toJson(
+              Seq(TaxEnrolmentsSubscription(Some(Seq(Identifier("DSTRefNumber", dstRegNo))), "PENDING", None))
+            )
+          )
         )
       case "22222" =>
         Future.successful(
           Ok(
             Json.toJson(
-              TaxEnrolmentsSubscription(None, "ERROR", Some("It is an error"))
+              Seq(TaxEnrolmentsSubscription(None, "ERROR", Some("It is an error")))
             )
           )
         )
