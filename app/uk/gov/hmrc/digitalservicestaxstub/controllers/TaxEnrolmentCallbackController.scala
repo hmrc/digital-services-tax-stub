@@ -73,12 +73,15 @@ class TaxEnrolmentCallbackController @Inject() (
       }
 
   def trigger(seed: String): Action[AnyContent] = Action.async { implicit request =>
-    DesGenerator.genDstRegisterResponse
-      .seeded(seed)
+    val seedRegister = DesGenerator.genDstRegisterResponse.seeded(seed)
+    val response     = seedRegister
       .map { x =>
         CallbackNotification(x.response.formBundleNumber, "SUCCEEDED")
       }
       .fold(throw new Exception("bad seed"))(send)
+    response.map(
+      _.withHeaders("dstRegistrationNumber" -> seedRegister.getOrElse(throw new Exception("bad seed")).dstRegNo)
+    )
   }
 
   def getDstRegNo(seed: String): Action[AnyContent] = Action.async { request =>
