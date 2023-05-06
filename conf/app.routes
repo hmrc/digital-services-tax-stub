@@ -17,3 +17,5 @@ GET /trigger/callback/te/:seed                                        uk.gov.hmr
 GET /get-subscription/:seed                                           uk.gov.hmrc.digitalservicestaxstub.controllers.TaxEnrolmentCallbackController.getDstRegNo(seed)
 
 GET /tax-enrolments/groups/:groupId/subscriptions                     uk.gov.hmrc.digitalservicestaxstub.controllers.TaxEnrolmentCallbackController.getSubscriptionByGroupId(groupId)
+
+GET /enrolment-store-proxy/enrolment-store/groups/:groupId/enrolments   uk.gov.hmrc.digitalservicestaxstub.controllers.EnrolmentStoreProxyController.getGroupEnrolments(groupId: String, service: Option[String] ?= None)
