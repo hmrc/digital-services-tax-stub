@@ -20,12 +20,8 @@ import play.api.libs.json.{Format, Json}
 
 import scala.collection.immutable.Seq
 
-case class TaxEnrolmentsSubscription(
-  identifiers: Option[Seq[Identifier]],
-  state: String,
-  errorResponse: Option[String]
-)
+case class Identifier(key: String, value: String)
 
-object TaxEnrolmentsSubscription {
-  implicit val format: Format[TaxEnrolmentsSubscription] = Json.format[TaxEnrolmentsSubscription]
+object Identifier {
+  implicit val format: Format[Identifier] = Json.format[Identifier]
 }
