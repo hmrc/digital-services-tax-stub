@@ -50,7 +50,7 @@ class TaxEnrolmentCallbackControllerSpec extends AnyFreeSpec with GuiceOneServer
     }
 
     "must return OK and state as 'SUCCEEDED' for the input groupId is 67890" in {
-      val result: Future[Result] = controller.getSubscriptionByGroupId("67890")(request)
+      val result: Future[Result]    = controller.getSubscriptionByGroupId("67890")(request)
       status(result) mustBe OK
       val taxEnrolmentsSubscription = contentAsJson(result).as[Seq[TaxEnrolmentsSubscription]].head
       taxEnrolmentsSubscription.state mustBe "SUCCEEDED"

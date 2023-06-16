@@ -18,8 +18,6 @@ package uk.gov.hmrc.digitalservicestaxstub.models
 
 import play.api.libs.json.{Format, Json}
 
-import scala.collection.immutable.Seq
-
 case class Identifier(key: String, value: String)
 
 object Identifier {
