@@ -85,7 +85,6 @@ class TaxEnrolmentCallbackController @Inject() (
     DesGenerator.genDstRegisterResponse
       .seeded(seed)
       .map { x =>
-        request.session.+("dstRegistrationNumber", x.dstRegNo)
         x.dstRegNo
       }
       .fold(throw new Exception("bad seed")) { y =>
@@ -94,13 +93,13 @@ class TaxEnrolmentCallbackController @Inject() (
   }
 
   def getSubscriptionByGroupId(groupId: String): Action[AnyContent] = Action.async { request =>
-    val dstRegNo = request.session.get("dstRegistrationNumber").getOrElse("AMDST0799721562")
+    val groupIdDstRefMap = Map("12345"-> "AMDST0799721562", "67890" -> "QIDST6330779458")
     groupId match {
-      case "12345" =>
+      case grpId if groupIdDstRefMap.contains(grpId) =>
         Future.successful(
           Ok(
             Json.toJson(
-              Seq(TaxEnrolmentsSubscription(Some(Seq(Identifier("DSTRefNumber", dstRegNo))), "SUCCEEDED", None))
+              Seq(TaxEnrolmentsSubscription(Some(Seq(Identifier("DSTRefNumber", groupIdDstRefMap.get(grpId).head))), "SUCCEEDED", None))
             )
           )
         )
@@ -108,7 +107,7 @@ class TaxEnrolmentCallbackController @Inject() (
         Future.successful(
           Ok(
             Json.toJson(
-              Seq(TaxEnrolmentsSubscription(Some(Seq(Identifier("DSTRefNumber", dstRegNo))), "PENDING", None))
+              Seq(TaxEnrolmentsSubscription(Some(Seq(Identifier("DSTRefNumber", "AMDST0799721562"))), "PENDING", None))
             )
           )
         )
