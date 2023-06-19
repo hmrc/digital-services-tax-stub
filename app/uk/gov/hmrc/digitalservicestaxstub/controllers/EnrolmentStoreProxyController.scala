@@ -33,8 +33,9 @@ class EnrolmentStoreProxyController @Inject() (
 ) extends BackendController(cc) {
 
   def getGroupEnrolments(groupId: String, service: Option[String]): Action[AnyContent] = Action.async { request =>
+    val groupIdDstRefMap = Map("12345" -> "AMDST0799721562", "67890" -> "QIDST6330779458")
     groupId match {
-      case "12345" if service.isDefined && service.get == "HMRC-DST-ORG" =>
+      case grpId if service.isDefined && service.get == "HMRC-DST-ORG" && groupIdDstRefMap.contains(grpId) =>
         Future.successful(
           Ok(
             Json.toJson(
@@ -45,7 +46,7 @@ class EnrolmentStoreProxyController @Inject() (
                     service.get,
                     "",
                     "Activated",
-                    Seq(Identifier("DSTRefNumber", "AMDST0799721562")),
+                    Seq(Identifier("DSTRefNumber", groupIdDstRefMap.get(grpId).head)),
                     Some("2023-05-05 12:19:26.798"),
                     Some("2023-05-05 12:19:26.798"),
                     Some(0)
@@ -56,7 +57,7 @@ class EnrolmentStoreProxyController @Inject() (
             )
           )
         )
-      case _                                                             => Future.successful(NoContent)
+      case _                                                                                               => Future.successful(NoContent)
     }
   }
 

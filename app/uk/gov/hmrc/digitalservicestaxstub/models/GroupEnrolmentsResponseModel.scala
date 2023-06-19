@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.models
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Json
 
 import scala.collection.immutable.Seq
 

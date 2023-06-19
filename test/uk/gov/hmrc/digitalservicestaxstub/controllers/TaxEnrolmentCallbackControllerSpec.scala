@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.controllers
 
+import org.scalacheck.Gen
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -40,8 +41,16 @@ class TaxEnrolmentCallbackControllerSpec extends AnyFreeSpec with GuiceOneServer
   def controller                    = new TaxEnrolmentCallbackController(appConfig = appConfig, cc = cc, backendConnector = connector)
 
   "TaxEnrolmentCallbackController" - {
-    "must return OK and state as 'SUCCEEDED' for the input groupId" in {
+    "must return OK and state as 'SUCCEEDED' for the input groupId is 12345" in {
       val result: Future[Result]    = controller.getSubscriptionByGroupId("12345")(request)
+      status(result) mustBe OK
+      val taxEnrolmentsSubscription = contentAsJson(result).as[Seq[TaxEnrolmentsSubscription]].head
+      taxEnrolmentsSubscription.state mustBe "SUCCEEDED"
+      taxEnrolmentsSubscription.identifiers.isDefined mustBe true
+    }
+
+    "must return OK and state as 'SUCCEEDED' for the input groupId is 67890" in {
+      val result: Future[Result]    = controller.getSubscriptionByGroupId("67890")(request)
       status(result) mustBe OK
       val taxEnrolmentsSubscription = contentAsJson(result).as[Seq[TaxEnrolmentsSubscription]].head
       taxEnrolmentsSubscription.state mustBe "SUCCEEDED"
