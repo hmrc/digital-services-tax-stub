@@ -28,8 +28,6 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class EnrolmentStoreProxyController @Inject() (
   cc: ControllerComponents
-)(implicit
-  executionContext: ExecutionContext
 ) extends BackendController(cc) {
 
   def getGroupEnrolments(groupId: String, service: Option[String]): Action[AnyContent] = Action.async { request =>
