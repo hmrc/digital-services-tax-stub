@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.controllers
 
-import org.scalacheck.Gen
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar.mock

@@ -31,7 +31,7 @@ class DSTRegistrationSpec extends AnyFlatSpec with Matchers {
         val stream = getClass.getResourceAsStream(
           "/dst/1479-eeitt-subscribe.request.example1.json"
         )
-        fromInputStream(stream).getLines.mkString("\n")
+        fromInputStream(stream).getLines().mkString("\n")
       }
 
       val json: JsValue = Json.parse(jsonText)
