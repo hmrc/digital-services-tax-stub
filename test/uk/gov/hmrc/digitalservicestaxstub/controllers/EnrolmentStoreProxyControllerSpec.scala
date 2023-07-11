@@ -18,16 +18,12 @@ package uk.gov.hmrc.digitalservicestaxstub.controllers
 
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
-import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.http.Status.{BAD_REQUEST, NO_CONTENT}
+import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.Json
 import play.api.mvc.{ControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{OK, contentAsJson, defaultAwaitTimeout, status, stubControllerComponents}
-import uk.gov.hmrc.digitalservicestaxstub.config.AppConfig
-import uk.gov.hmrc.digitalservicestaxstub.connectors.BackendConnector
-import uk.gov.hmrc.digitalservicestaxstub.models.TaxEnrolmentsSubscription
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

@@ -106,7 +106,7 @@ class DESController @Inject() (
           "/dst/1330-get-obligation.response.example1.json"
         )
       )
-      .getLines
+      .getLines()
       .mkString("\n")
 
   def getPeriods(dstRegNo: String): Action[AnyContent] = Action {
