@@ -1,5 +1,3 @@
-import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
-
 val appName = "digital-services-tax-stub"
 PlayKeys.playDefaultPort := 8742
 
@@ -10,7 +8,6 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test
   )
   .configs(IntegrationTest)
-  .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
 
-scalaVersion := "2.13.10"
+scalaVersion := "2.13.12"
