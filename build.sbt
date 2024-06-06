@@ -7,7 +7,6 @@ lazy val microservice = Project(appName, file("."))
     majorVersion := 0,
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test
   )
-  .configs(IntegrationTest)
   .settings(resolvers += Resolver.jcenterRepo)
 
-scalaVersion := "2.13.12"
+scalaVersion := "2.13.13"

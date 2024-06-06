@@ -2,7 +2,7 @@ import sbt._
 
 object AppDependencies {
 
-  val hmrcBootstrapVersion = "8.4.0"
+  val hmrcBootstrapVersion = "8.6.0"
   val play = "30"
 
   val compile = Seq(
