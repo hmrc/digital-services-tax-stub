@@ -39,41 +39,19 @@ Retrieves a generated DST subscription.
 **GET /enterprise/financial-data/ZDST/:dstRegNo/DST**
 Displays canned financial data
 
-## Running from source
-Clone the repository using SSH:
+## Running the service
+### Service manager
+The whole service can be started with:
 
-`git@github.com:hmrc/digital-services-tax-stub.git`
+`sm2 --start DST_ALL`
 
-If you need to setup SSH, see [the github guide to setting up SSH](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/)
+or specifically for only the stub
 
-Run the code from source using 
+`sm2 --start DST_STUB`
+
+### Locally
 
 `sbt run`
-
-Open your browser and navigate to the following url:
-
-`http://localhost:8740/digital-services-tax-frontend/`
-
-## Running through service manager
-
-Run the following command in a terminal: `nano /home/<USER>/.sbt/.credentials`
-
-See the output and ensure it is populated with the following details:
-
-```
-realm=Sonatype Nexus Repository Manager
-host=NEXUS URL
-user=USERNAME
-password=PASSWORD
-```
-
-*You need to be on the VPN*
-
-Ensure your service manager config is up to date, and run the following command:
-
-`sm --start DST_ALL -f`
-
-This will start all the required services
 
 ## Running scalafmt
 
