@@ -28,19 +28,19 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import scala.concurrent.Future
 
 @Singleton()
-class DESController @Inject()(
-                               appConfig: AppConfig,
-                               cc: ControllerComponents,
-                               AuthAndEnvAction: AuthAndEnvAction,
-                               desService: DesService
-                             ) extends BackendController(cc) {
+class DESController @Inject() (
+  appConfig: AppConfig,
+  cc: ControllerComponents,
+  AuthAndEnvAction: AuthAndEnvAction,
+  desService: DesService
+) extends BackendController(cc) {
 
   def rosmLookupWithoutID: Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
     withJsonBody[RosmRegisterWithoutIDRequest] { rosmRequest =>
       if (rosmRequest.regime.matches("DST"))
         desService.handleRosmLookupWithoutIdRequest(rosmRequest) match {
           case Some(data) => Future successful Ok(Json.toJson(data))
-          case _ =>
+          case _          =>
             Future successful NotFound(
               Json.toJson(FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
             )
@@ -57,7 +57,7 @@ class DESController @Inject()(
       if (rosmRequest.regime.matches("DST"))
         desService.handleRosmLookupWithIdRequest(rosmRequest, utr) match {
           case Some(data) => Future successful Ok(Json.toJson(data))
-          case _ =>
+          case _          =>
             Future successful NotFound(
               Json.toJson(FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
             )
@@ -70,10 +70,10 @@ class DESController @Inject()(
   }
 
   def dstRegistration(
-                       regime: String,
-                       idType: String,
-                       idNumber: String
-                     ): Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
+    regime: String,
+    idType: String,
+    idNumber: String
+  ): Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
     withJsonBody[EeittSubscribe] { case EeittSubscribe(regData) =>
       if (appConfig.etmpNotReady) {
         Future.successful(Status(appConfig.etmpNotReadyStatus))
@@ -81,7 +81,7 @@ class DESController @Inject()(
         if (regime.matches("DST"))
           desService.handleDstRegistration(idType, idNumber, regData) match {
             case Some(data) => Future successful Ok(Json.toJson(data))
-            case _ =>
+            case _          =>
               Future successful NotFound(
                 Json.toJson(FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
               )

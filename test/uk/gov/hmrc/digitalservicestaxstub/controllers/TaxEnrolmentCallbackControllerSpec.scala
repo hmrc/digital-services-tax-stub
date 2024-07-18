@@ -21,7 +21,7 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.http.Status.BAD_REQUEST
-import play.api.mvc.{ControllerComponents, Result}
+import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{OK, contentAsJson, defaultAwaitTimeout, status, stubControllerComponents}
 import uk.gov.hmrc.digitalservicestaxstub.config.AppConfig
@@ -33,48 +33,44 @@ import scala.concurrent.Future
 
 class TaxEnrolmentCallbackControllerSpec extends AnyFreeSpec with GuiceOneServerPerSuite with Matchers {
 
-  val connector: BackendConnector   = mock[BackendConnector]
-  val appConfig: AppConfig          = app.injector.instanceOf[AppConfig]
-  lazy val cc: ControllerComponents = stubControllerComponents()
-  val request                       = FakeRequest("", "")
-  def controller                    = new TaxEnrolmentCallbackController(appConfig = appConfig, cc = cc, backendConnector = connector)
+  val connector: BackendConnector                  = mock[BackendConnector]
+  val appConfig: AppConfig                         = app.injector.instanceOf[AppConfig]
+  lazy val cc: ControllerComponents                = stubControllerComponents()
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
+  def controller                                   = new TaxEnrolmentCallbackController(appConfig = appConfig, cc = cc, backendConnector = connector)
 
   "TaxEnrolmentCallbackController" - {
-    "must return OK and state as 'SUCCEEDED' for the input groupId is 12345" in {
-      val result: Future[Result]    = controller.getSubscriptionByGroupId("12345")(request)
-      status(result) mustBe OK
-      val taxEnrolmentsSubscription = contentAsJson(result).as[Seq[TaxEnrolmentsSubscription]].head
-      taxEnrolmentsSubscription.state mustBe "SUCCEEDED"
-      taxEnrolmentsSubscription.identifiers.isDefined mustBe true
-    }
+    "getSubscriptionByGroupId" - {
+      Seq("12345", "67890", "33333") foreach { groupId =>
+        s"must return OK and state as 'SUCCEEDED' for the input groupId is $groupId" in {
+          val result: Future[Result]    = controller.getSubscriptionByGroupId(groupId)(request)
+          status(result) mustBe OK
+          val taxEnrolmentsSubscription = contentAsJson(result).as[Seq[TaxEnrolmentsSubscription]].head
+          taxEnrolmentsSubscription.state mustBe "SUCCEEDED"
+          taxEnrolmentsSubscription.identifiers.isDefined mustBe true
+        }
+      }
 
-    "must return OK and state as 'SUCCEEDED' for the input groupId is 67890" in {
-      val result: Future[Result]    = controller.getSubscriptionByGroupId("67890")(request)
-      status(result) mustBe OK
-      val taxEnrolmentsSubscription = contentAsJson(result).as[Seq[TaxEnrolmentsSubscription]].head
-      taxEnrolmentsSubscription.state mustBe "SUCCEEDED"
-      taxEnrolmentsSubscription.identifiers.isDefined mustBe true
-    }
+      "must return OK and state as 'PENDING' for the input groupId" in {
+        val result: Future[Result]    = controller.getSubscriptionByGroupId("11111")(request)
+        status(result) mustBe OK
+        val taxEnrolmentsSubscription = contentAsJson(result).as[Seq[TaxEnrolmentsSubscription]].head
+        taxEnrolmentsSubscription.state mustBe "PENDING"
+        taxEnrolmentsSubscription.identifiers.isDefined mustBe true
+      }
 
-    "must return OK and state as 'PENDING' for the input groupId" in {
-      val result: Future[Result]    = controller.getSubscriptionByGroupId("11111")(request)
-      status(result) mustBe OK
-      val taxEnrolmentsSubscription = contentAsJson(result).as[Seq[TaxEnrolmentsSubscription]].head
-      taxEnrolmentsSubscription.state mustBe "PENDING"
-      taxEnrolmentsSubscription.identifiers.isDefined mustBe true
-    }
+      "must return OK and state as 'ERROR' for the input groupId" in {
+        val result: Future[Result]    = controller.getSubscriptionByGroupId("22222")(request)
+        status(result) mustBe OK
+        val taxEnrolmentsSubscription = contentAsJson(result).as[Seq[TaxEnrolmentsSubscription]].head
+        taxEnrolmentsSubscription.state mustBe "ERROR"
+        taxEnrolmentsSubscription.identifiers.isDefined mustBe false
+      }
 
-    "must return OK and state as 'ERROR' for the input groupId" in {
-      val result: Future[Result]    = controller.getSubscriptionByGroupId("22222")(request)
-      status(result) mustBe OK
-      val taxEnrolmentsSubscription = contentAsJson(result).as[Seq[TaxEnrolmentsSubscription]].head
-      taxEnrolmentsSubscription.state mustBe "ERROR"
-      taxEnrolmentsSubscription.identifiers.isDefined mustBe false
-    }
-
-    "must return BadRequest for the input groupId 888888" in {
-      val result = controller.getSubscriptionByGroupId("888888")(request)
-      status(result) mustBe BAD_REQUEST
+      "must return BadRequest for the input groupId 888888" in {
+        val result = controller.getSubscriptionByGroupId("888888")(request)
+        status(result) mustBe BAD_REQUEST
+      }
     }
   }
 

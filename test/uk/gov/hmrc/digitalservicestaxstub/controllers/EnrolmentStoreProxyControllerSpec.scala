@@ -21,7 +21,7 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.Json
-import play.api.mvc.{ControllerComponents, Result}
+import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{OK, contentAsJson, defaultAwaitTimeout, status, stubControllerComponents}
 
@@ -30,39 +30,42 @@ import scala.concurrent.Future
 
 class EnrolmentStoreProxyControllerSpec extends AnyFreeSpec with GuiceOneServerPerSuite with Matchers {
 
-  lazy val cc: ControllerComponents = stubControllerComponents()
-  val request                       = FakeRequest("", "")
-  def controller                    = new EnrolmentStoreProxyController(cc)
+  lazy val cc: ControllerComponents                = stubControllerComponents()
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
+  def controller                                   = new EnrolmentStoreProxyController(cc)
 
   "EnrolmentStoreProxyController" - {
-    "must return OK and expected Json for the input groupId 12345" in {
-      val result: Future[Result] = controller.getGroupEnrolments("12345", Some("HMRC-DST-ORG"))(request)
-      status(result) mustBe OK
-      val groupEnrolmentResponse = """{
-                                     |    "startRecord":1,
-                                     |    "totalRecords":1,
-                                     |    "enrolments":[
-                                     |                {
-                                     |                    "service":"HMRC-DST-ORG",
-                                     |                    "state":"Activated",
-                                     |                    "friendlyName":"",
-                                     |                     "enrolmentDate":"2023-05-05 12:19:26.798",
-                                     |                     "failedActivationCount":0,
-                                     |                     "activationDate":"2023-05-05 12:19:26.798",
-                                     |
-                                     |                    "identifiers": [
-                                     |
-                                     |                            {
-                                     |                                "key":"DSTRefNumber",
-                                     |                                "value":"AMDST0799721562"
-                                     |                            }
-                                     |
-                                     |                    ]
-                                     |                }
-                                     |
-                                     |    ]
-                                     |}""".stripMargin
-      contentAsJson(result) mustBe Json.parse(groupEnrolmentResponse)
+    Map("12345" -> "AMDST0799721562", "67890" -> "QIDST6330779458", "33333" -> "DUDST2932891441") foreach {
+      case (grpId, dstNumber) =>
+        s"must return OK and expected Json for the input groupId $grpId" in {
+          val result: Future[Result] = controller.getGroupEnrolments(grpId, Some("HMRC-DST-ORG"))(request)
+          status(result) mustBe OK
+          val groupEnrolmentResponse = s"""{
+                                       |    "startRecord":1,
+                                       |    "totalRecords":1,
+                                       |    "enrolments":[
+                                       |                {
+                                       |                    "service":"HMRC-DST-ORG",
+                                       |                    "state":"Activated",
+                                       |                    "friendlyName":"",
+                                       |                     "enrolmentDate":"2023-05-05 12:19:26.798",
+                                       |                     "failedActivationCount":0,
+                                       |                     "activationDate":"2023-05-05 12:19:26.798",
+                                       |
+                                       |                    "identifiers": [
+                                       |
+                                       |                            {
+                                       |                                "key":"DSTRefNumber",
+                                       |                                "value":"$dstNumber"
+                                       |                            }
+                                       |
+                                       |                    ]
+                                       |                }
+                                       |
+                                       |    ]
+                                       |}""".stripMargin
+          contentAsJson(result) mustBe Json.parse(groupEnrolmentResponse)
+        }
     }
 
     "must return NoContent for the input groupId 888888" in {
