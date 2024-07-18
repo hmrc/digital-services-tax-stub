@@ -93,7 +93,7 @@ class TaxEnrolmentCallbackController @Inject() (
   }
 
   def getSubscriptionByGroupId(groupId: String): Action[AnyContent] = Action.async { request =>
-    val groupIdDstRefMap = Map("12345" -> "AMDST0799721562", "67890" -> "QIDST6330779458")
+    val groupIdDstRefMap = Map("12345" -> "AMDST0799721562", "67890" -> "QIDST6330779458", "33333" -> "DUDST2932891441")
     groupId match {
       case grpId if groupIdDstRefMap.contains(grpId) =>
         Future.successful(
