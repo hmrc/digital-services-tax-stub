@@ -95,8 +95,12 @@ class DESController @Inject() (
   }
 
   def dstReturn(regNo: String): Action[AnyContent] = AuthAndEnvAction(parse.json) {
-    val r: DSTRegistrationResponse = DesGenerator.genDstRegisterResponse.map(_.response).sample.get
-    Ok(Json.toJson(r))
+    if (regNo.equalsIgnoreCase("DUDST2932891441")) {
+      BadRequest
+    } else {
+      val r: DSTRegistrationResponse = DesGenerator.genDstRegisterResponse.map(_.response).sample.get
+      Ok(Json.toJson(r))
+    }
   }
 
   lazy val cannedPeriodResponse: String =
