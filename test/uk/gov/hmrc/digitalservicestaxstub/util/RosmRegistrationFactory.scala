@@ -23,12 +23,30 @@ import uk.gov.hmrc.digitalservicestaxstub.models.{Address, RosmRegisterRequest, 
 class RosmRegistrationFactory {
 
   private val dstWithoutIdRequestObj: JsValue =
-    Json.toJson(RosmRegisterWithoutIDRequest("DST", "", isAnAgent = false, isAGroup = false, None,
-    Address("", None, None, None, None, "GB"), RosmRequestWithoutIDContactDetails(None, None, None, None)))
+    Json.toJson(
+      RosmRegisterWithoutIDRequest(
+        "DST",
+        "",
+        isAnAgent = false,
+        isAGroup = false,
+        None,
+        Address("", None, None, None, None, "GB"),
+        RosmRequestWithoutIDContactDetails(None, None, None, None)
+      )
+    )
 
   private val nonDstWithoutIdRequestObj: JsValue =
-    Json.toJson(RosmRegisterWithoutIDRequest("NON_DST", "", isAnAgent = false, isAGroup = false, None,
-    Address("", None, None, None, None, "GB"), RosmRequestWithoutIDContactDetails(None, None, None, None)))
+    Json.toJson(
+      RosmRegisterWithoutIDRequest(
+        "NON_DST",
+        "",
+        isAnAgent = false,
+        isAGroup = false,
+        None,
+        Address("", None, None, None, None, "GB"),
+        RosmRequestWithoutIDContactDetails(None, None, None, None)
+      )
+    )
 
   private val dstRequestObj: JsValue =
     Json.toJson(RosmRegisterRequest("DST", requiresNameMatch = false, isAnAgent = false, None, None))
@@ -36,10 +54,8 @@ class RosmRegistrationFactory {
   private val nonDstRequestObj: JsValue =
     Json.toJson(RosmRegisterRequest("NON_DST", requiresNameMatch = false, isAnAgent = false, None))
 
-
-
-  def getDSTRosmLookupWithoutIDRequest: JsValue =  dstWithoutIdRequestObj
+  def getDSTRosmLookupWithoutIDRequest: JsValue    = dstWithoutIdRequestObj
   def getNonDSTRosmLookupWithoutIDRequest: JsValue = nonDstWithoutIdRequestObj
-  def getDSTRosmLookupWithIDRequest: JsValue =  dstRequestObj
-  def getNonDSTRosmLookupWithIDRequest: JsValue = nonDstRequestObj
+  def getDSTRosmLookupWithIDRequest: JsValue       = dstRequestObj
+  def getNonDSTRosmLookupWithIDRequest: JsValue    = nonDstRequestObj
 }

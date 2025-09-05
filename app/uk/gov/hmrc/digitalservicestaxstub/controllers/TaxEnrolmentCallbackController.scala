@@ -69,7 +69,7 @@ class TaxEnrolmentCallbackController @Inject() (
         notification
       )
 
-      Future.successful(Ok("Tax enrolments callback triggered"))
+    Future.successful(Ok("Tax enrolments callback triggered"))
   }
 
   def trigger(seed: String): Action[AnyContent] = Action.async { implicit request =>

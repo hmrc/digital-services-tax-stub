@@ -73,23 +73,20 @@ class TaxEnrolmentCallbackControllerSpec extends AnyFreeSpec with GuiceOneServer
       }
     }
 
-
-
     "getDstRegNo" - {
-        s"must return OK and return dstRegNo" in {
-          val result: Future[Result]    = controller.getDstRegNo("12345")(request)
-          val dstRegResult = contentAsString(result)
-          status(result) mustBe OK
-          contentType(result) mustBe Some("application/json")
-          dstRegResult must include ("dstRegNo")
+      s"must return OK and return dstRegNo" in {
+        val result: Future[Result] = controller.getDstRegNo("12345")(request)
+        val dstRegResult           = contentAsString(result)
+        status(result) mustBe OK
+        contentType(result) mustBe Some("application/json")
+        dstRegResult must include("dstRegNo")
       }
     }
 
-
     "trigger" - {
       s"must return OK and return Tax enrolments callback triggered" in {
-        val result: Future[Result]    = controller.trigger("12345")(request)
-        val resultContent = contentAsString(result)
+        val result: Future[Result] = controller.trigger("12345")(request)
+        val resultContent          = contentAsString(result)
         status(result) mustBe OK
         contentType(result) mustBe Some("text/plain")
         resultContent mustBe "Tax enrolments callback triggered"

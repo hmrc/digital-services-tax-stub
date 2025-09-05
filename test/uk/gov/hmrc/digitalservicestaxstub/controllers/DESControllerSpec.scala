@@ -43,33 +43,37 @@ class DESControllerSpec extends AnyFreeSpec with GuiceOneServerPerSuite with Mat
     FakeRequest("", "").withHeaders(HeaderNames.AUTHORIZATION -> "token", "Environment" -> "live")
 
   // Create Serialized Jsons
-  val dstRegistrationJsonPayload: JsValue = new DSTRegistrationFactory().getDstRegistrationData
-  val rosmDSTWithoutIdJsonPayload: JsValue = new RosmRegistrationFactory().getDSTRosmLookupWithoutIDRequest
+  val dstRegistrationJsonPayload: JsValue     = new DSTRegistrationFactory().getDstRegistrationData
+  val rosmDSTWithoutIdJsonPayload: JsValue    = new RosmRegistrationFactory().getDSTRosmLookupWithoutIDRequest
   val rosmNonDSTWithoutIdJsonPayload: JsValue = new RosmRegistrationFactory().getNonDSTRosmLookupWithoutIDRequest
-  val rosmDSTWithIdJsonPayload: JsValue = new RosmRegistrationFactory().getDSTRosmLookupWithIDRequest
-  val rosmNonDSTWithIdJsonPayload: JsValue = new RosmRegistrationFactory().getNonDSTRosmLookupWithIDRequest
-
+  val rosmDSTWithIdJsonPayload: JsValue       = new RosmRegistrationFactory().getDSTRosmLookupWithIDRequest
+  val rosmNonDSTWithIdJsonPayload: JsValue    = new RosmRegistrationFactory().getNonDSTRosmLookupWithIDRequest
 
   // Create Fake Requests
   val registrationRequest: FakeRequest[JsValue] =
     FakeRequest("", "")
-      .withHeaders(HeaderNames.AUTHORIZATION -> "token", "Environment" -> "live").withBody(dstRegistrationJsonPayload)
+      .withHeaders(HeaderNames.AUTHORIZATION -> "token", "Environment" -> "live")
+      .withBody(dstRegistrationJsonPayload)
 
   val DSTRosmWithoutIDRequest: FakeRequest[JsValue] =
     FakeRequest("", "")
-      .withHeaders(HeaderNames.AUTHORIZATION -> "token", "Environment" -> "live").withBody(rosmDSTWithoutIdJsonPayload)
+      .withHeaders(HeaderNames.AUTHORIZATION -> "token", "Environment" -> "live")
+      .withBody(rosmDSTWithoutIdJsonPayload)
 
   val nonDSTRosmWithoutIDRequest: FakeRequest[JsValue] =
     FakeRequest("", "")
-      .withHeaders(HeaderNames.AUTHORIZATION -> "token", "Environment" -> "live").withBody(rosmNonDSTWithoutIdJsonPayload)
+      .withHeaders(HeaderNames.AUTHORIZATION -> "token", "Environment" -> "live")
+      .withBody(rosmNonDSTWithoutIdJsonPayload)
 
   val DSTRosmWithIDRequest: FakeRequest[JsValue] =
     FakeRequest("", "")
-      .withHeaders(HeaderNames.AUTHORIZATION -> "token", "Environment" -> "live").withBody(rosmDSTWithIdJsonPayload)
+      .withHeaders(HeaderNames.AUTHORIZATION -> "token", "Environment" -> "live")
+      .withBody(rosmDSTWithIdJsonPayload)
 
   val nonDSTRosmWithIDRequest: FakeRequest[JsValue] =
     FakeRequest("", "")
-      .withHeaders(HeaderNames.AUTHORIZATION -> "token", "Environment" -> "live").withBody(rosmNonDSTWithIdJsonPayload)
+      .withHeaders(HeaderNames.AUTHORIZATION -> "token", "Environment" -> "live")
+      .withBody(rosmNonDSTWithIdJsonPayload)
 
   def controller = new DESController(appConfig = appConfig, cc = cc, authAndEnvAction, desService)
 
@@ -86,10 +90,10 @@ class DESControllerSpec extends AnyFreeSpec with GuiceOneServerPerSuite with Mat
       }
     }
 
-
     "dstRegistration" - {
       s"must return OK for DST regime" in {
-        when(desService.handleDstRegistration(any[String], any[String], any[DSTRegistration])).thenReturn(Some(DSTRegistrationResponse("", "")))
+        when(desService.handleDstRegistration(any[String], any[String], any[DSTRegistration]))
+          .thenReturn(Some(DSTRegistrationResponse("", "")))
         val result: Future[Result] = controller.dstRegistration("DST", "ID_TYPE", "001")(registrationRequest)
         status(result) mustBe OK
         contentType(result) mustBe Some("application/json")
@@ -109,12 +113,10 @@ class DESControllerSpec extends AnyFreeSpec with GuiceOneServerPerSuite with Mat
       }
     }
 
-
     "rosmLookupWithoutID" - {
       s"must return OK for DST regime" in {
         when(desService.handleRosmLookupWithoutIdRequest(any[RosmRegisterWithoutIDRequest]))
-          .thenReturn(Some(
-            RosmRegisterWitoutIDResponse("", "", "", None)))
+          .thenReturn(Some(RosmRegisterWitoutIDResponse("", "", "", None)))
         val result: Future[Result] = controller.rosmLookupWithoutID()(DSTRosmWithoutIDRequest)
         status(result) mustBe OK
         contentType(result) mustBe Some("application/json")
@@ -135,13 +137,24 @@ class DESControllerSpec extends AnyFreeSpec with GuiceOneServerPerSuite with Mat
       }
     }
 
-
     "rosmLookupWithID" - {
       s"must return OK for DST regime" in {
         when(desService.handleRosmLookupWithIdRequest(any[RosmRegisterRequest], any[String]))
-          .thenReturn(Some(
-            RosmRegisterResponse("", None, isEditable = false, isAnAgent = false, isAnIndividual = false, None, None,
-              RosmResponseAddress("", None, None, None, "", ""), RosmResponseContactDetails(None, None, None, None))))
+          .thenReturn(
+            Some(
+              RosmRegisterResponse(
+                "",
+                None,
+                isEditable = false,
+                isAnAgent = false,
+                isAnIndividual = false,
+                None,
+                None,
+                RosmResponseAddress("", None, None, None, "", ""),
+                RosmResponseContactDetails(None, None, None, None)
+              )
+            )
+          )
         val result: Future[Result] = controller.rosmLookupWithId("12345678")(DSTRosmWithIDRequest)
         status(result) mustBe OK
         contentType(result) mustBe Some("application/json")
@@ -161,7 +174,6 @@ class DESControllerSpec extends AnyFreeSpec with GuiceOneServerPerSuite with Mat
         contentType(result) mustBe Some("application/json")
       }
     }
-
 
     "getPeriod" - {
       s"must return OK" in {
