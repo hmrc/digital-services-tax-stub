@@ -59,12 +59,12 @@ case class DSTRegistration(
 )
 
 case object DSTRegistration {
-  implicit val bcdformat: OFormat[BusinessContactDetails] = Json.format[BusinessContactDetails]
-  implicit val leformat: OFormat[LegalEntity] = Json.format[LegalEntity]
+  implicit val bcdformat: OFormat[BusinessContactDetails]       = Json.format[BusinessContactDetails]
+  implicit val leformat: OFormat[LegalEntity]                   = Json.format[LegalEntity]
   implicit val cinformat: OFormat[CustomerIdentificationNumber] = Json.format[CustomerIdentificationNumber]
-  implicit val cdformat: OFormat[CommonDetails] = Json.format[CommonDetails]
-  implicit val pformat: OFormat[Params] = Json.format[Params]
-  implicit val format: OFormat[DSTRegistration] = Json.format[DSTRegistration]
+  implicit val cdformat: OFormat[CommonDetails]                 = Json.format[CommonDetails]
+  implicit val pformat: OFormat[Params]                         = Json.format[Params]
+  implicit val format: OFormat[DSTRegistration]                 = Json.format[DSTRegistration]
 }
 
 case class EeittSubscribe(
