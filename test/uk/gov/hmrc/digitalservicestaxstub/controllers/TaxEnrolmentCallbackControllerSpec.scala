@@ -23,7 +23,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.http.Status.BAD_REQUEST
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{OK, contentAsJson, defaultAwaitTimeout, status, stubControllerComponents}
+import play.api.test.Helpers._
 import uk.gov.hmrc.digitalservicestaxstub.config.AppConfig
 import uk.gov.hmrc.digitalservicestaxstub.connectors.BackendConnector
 import uk.gov.hmrc.digitalservicestaxstub.models.TaxEnrolmentsSubscription
@@ -70,6 +70,29 @@ class TaxEnrolmentCallbackControllerSpec extends AnyFreeSpec with GuiceOneServer
       "must return BadRequest for the input groupId 888888" in {
         val result = controller.getSubscriptionByGroupId("888888")(request)
         status(result) mustBe BAD_REQUEST
+      }
+    }
+
+
+
+    "getDstRegNo" - {
+        s"must return OK and return dstRegNo" in {
+          val result: Future[Result]    = controller.getDstRegNo("12345")(request)
+          val dstRegResult = contentAsString(result)
+          status(result) mustBe OK
+          contentType(result) mustBe Some("application/json")
+          dstRegResult must include ("dstRegNo")
+      }
+    }
+
+
+    "trigger" - {
+      s"must return OK and return Tax enrolments callback triggered" in {
+        val result: Future[Result]    = controller.trigger("12345")(request)
+        val resultContent = contentAsString(result)
+        status(result) mustBe OK
+        contentType(result) mustBe Some("text/plain")
+        resultContent mustBe "Tax enrolments callback triggered"
       }
     }
   }
