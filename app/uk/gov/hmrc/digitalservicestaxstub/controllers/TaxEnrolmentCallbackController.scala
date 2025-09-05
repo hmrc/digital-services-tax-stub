@@ -29,7 +29,6 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.smartstub._
 
 import javax.inject.{Inject, Singleton}
-import scala.collection.immutable.Seq
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -58,7 +57,7 @@ class TaxEnrolmentCallbackController @Inject() (
     implicit val format: Format[CallbackNotification] = Json.format[CallbackNotification]
   }
 
-  implicit val w = new HttpReads[Result] {
+  implicit val w: HttpReads[Result] = new HttpReads[Result] {
     override def read(method: String, url: String, response: HttpResponse): Result = NoContent
   }
 
