@@ -6,8 +6,8 @@ object AppDependencies {
   val play = "30"
 
   val compile = Seq(
-    "uk.gov.hmrc" %% s"bootstrap-backend-play-$play" % hmrcBootstrapVersion, // cannot update without moving to Scala 3
-    "uk.gov.hmrc" %% "stub-data-generator"       % "1.4.0"
+    "uk.gov.hmrc" %% s"bootstrap-backend-play-$play" % hmrcBootstrapVersion,
+    "uk.gov.hmrc" %% "stub-data-generator"       % "1.4.0" // cannot update without moving to Scala 3
   )
 
   val test = Seq(
