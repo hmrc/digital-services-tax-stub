@@ -15,13 +15,15 @@
  */
 
 package uk.gov.hmrc.digitalservicestaxstub.controllers
-
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.http.HttpEntity
 import play.api.http.Status.BAD_REQUEST
-import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result}
+import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, ResponseHeader, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.digitalservicestaxstub.config.AppConfig
@@ -75,6 +77,8 @@ class TaxEnrolmentCallbackControllerSpec extends AnyFreeSpec with GuiceOneServer
 
     "getDstRegNo" - {
       s"must return OK and return dstRegNo" in {
+        when(connector.bePost[Any, Any](any, any)(any, any, any, any))
+          .thenReturn(Future.successful(Result(new ResponseHeader(200), HttpEntity.NoEntity)))
         val result: Future[Result] = controller.getDstRegNo("12345")(request)
         val dstRegResult           = contentAsString(result)
         status(result) mustBe OK

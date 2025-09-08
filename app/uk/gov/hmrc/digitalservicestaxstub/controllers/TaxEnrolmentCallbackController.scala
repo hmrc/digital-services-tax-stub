@@ -61,15 +61,13 @@ class TaxEnrolmentCallbackController @Inject() (
     override def read(method: String, url: String, response: HttpResponse): Result = NoContent
   }
 
-  private def send(notification: CallbackNotification)(implicit request: Request[AnyContent]): Future[Result] = {
+  private def send(notification: CallbackNotification)(implicit request: Request[AnyContent]): Future[Result] =
     backendConnector
       .bePost[CallbackNotification, Result](
         s"/digital-services-tax/tax-enrolment-callback/${notification.url}",
         notification
       )
-
-    Future.successful(Ok("Tax enrolments callback triggered"))
-  }
+      .map(_ => Ok("Tax enrolments callback triggered"))
 
   def trigger(seed: String): Action[AnyContent] = Action.async { implicit request =>
     DesGenerator.genDstRegisterResponse
