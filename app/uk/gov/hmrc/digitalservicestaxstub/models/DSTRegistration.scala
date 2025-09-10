@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class LegalEntity(
   dateOfApplication: String, // YYYY-MM-DD
@@ -59,12 +59,12 @@ case class DSTRegistration(
 )
 
 case object DSTRegistration {
-  implicit val bcdformat = Json.format[BusinessContactDetails]
-  implicit val leformat  = Json.format[LegalEntity]
-  implicit val cinformat = Json.format[CustomerIdentificationNumber]
-  implicit val cdformat  = Json.format[CommonDetails]
-  implicit val pformat   = Json.format[Params]
-  implicit val format    = Json.format[DSTRegistration]
+  implicit val bcdformat: OFormat[BusinessContactDetails]       = Json.format[BusinessContactDetails]
+  implicit val leformat: OFormat[LegalEntity]                   = Json.format[LegalEntity]
+  implicit val cinformat: OFormat[CustomerIdentificationNumber] = Json.format[CustomerIdentificationNumber]
+  implicit val cdformat: OFormat[CommonDetails]                 = Json.format[CommonDetails]
+  implicit val pformat: OFormat[Params]                         = Json.format[Params]
+  implicit val format: OFormat[DSTRegistration]                 = Json.format[DSTRegistration]
 }
 
 case class EeittSubscribe(
@@ -73,5 +73,5 @@ case class EeittSubscribe(
 )
 
 object EeittSubscribe {
-  implicit val format = Json.format[EeittSubscribe]
+  implicit val format: OFormat[EeittSubscribe] = Json.format[EeittSubscribe]
 }

@@ -22,8 +22,7 @@ import uk.gov.hmrc.digitalservicestaxstub.models.{Enrolment, GroupEnrolmentsResp
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
-import scala.collection.immutable.Seq
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @Singleton
 class EnrolmentStoreProxyController @Inject() (
