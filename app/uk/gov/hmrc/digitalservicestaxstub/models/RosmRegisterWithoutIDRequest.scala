@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.models
 
+import play.api.libs.json.{Json, Reads, Writes}
+
 case class RosmRegisterWithoutIDRequest(
   regime: String,
   acknowledgementReference: String,
@@ -25,3 +27,8 @@ case class RosmRegisterWithoutIDRequest(
   address: Address,
   contactDetails: RosmRequestWithoutIDContactDetails
 )
+
+object RosmRegisterWithoutIDRequest {
+  implicit val writes: Writes[RosmRegisterWithoutIDRequest] = Json.writes[RosmRegisterWithoutIDRequest]
+  implicit val reads: Reads[RosmRegisterWithoutIDRequest] = Json.reads[RosmRegisterWithoutIDRequest]
+}

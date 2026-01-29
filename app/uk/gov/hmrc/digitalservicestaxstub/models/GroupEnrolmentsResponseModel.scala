@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 import scala.collection.immutable.Seq
 
@@ -32,7 +32,7 @@ case class Enrolment(
 )
 
 object Enrolment {
-  implicit val formats = Json.format[Enrolment]
+  implicit val formats: OFormat[Enrolment] = Json.format[Enrolment]
 }
 
 case class GroupEnrolmentsResponseModel(
@@ -42,5 +42,5 @@ case class GroupEnrolmentsResponseModel(
 )
 
 object GroupEnrolmentsResponseModel {
-  implicit val formats = Json.format[GroupEnrolmentsResponseModel]
+  implicit val formats: OFormat[GroupEnrolmentsResponseModel] = Json.format[GroupEnrolmentsResponseModel]
 }
