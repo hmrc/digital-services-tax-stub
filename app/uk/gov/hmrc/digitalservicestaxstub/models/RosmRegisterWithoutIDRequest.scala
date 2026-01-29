@@ -30,5 +30,5 @@ case class RosmRegisterWithoutIDRequest(
 
 object RosmRegisterWithoutIDRequest {
   implicit val writes: Writes[RosmRegisterWithoutIDRequest] = Json.writes[RosmRegisterWithoutIDRequest]
-  implicit val reads: Reads[RosmRegisterWithoutIDRequest] = Json.reads[RosmRegisterWithoutIDRequest]
+  implicit val reads: Reads[RosmRegisterWithoutIDRequest]   = Json.reads[RosmRegisterWithoutIDRequest]
 }

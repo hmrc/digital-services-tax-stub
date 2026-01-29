@@ -30,7 +30,7 @@ case class RosmRegisterRequest(
 
 object RosmRegisterRequest {
   implicit val writes: OWrites[RosmRegisterRequest] = Json.writes[RosmRegisterRequest]
-  implicit val reads: Reads[RosmRegisterRequest] = Json.reads[RosmRegisterRequest]
+  implicit val reads: Reads[RosmRegisterRequest]    = Json.reads[RosmRegisterRequest]
 }
 
 case class Individual(
