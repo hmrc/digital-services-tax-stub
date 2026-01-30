@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.models
 
+import play.api.libs.json.{Json, OWrites, Reads}
+
 import java.time.LocalDate
 
 case class RosmRegisterRequest(
@@ -25,6 +27,11 @@ case class RosmRegisterRequest(
   individual: Option[Individual] = None,
   organisation: Option[OrganisationRequest] = None
 )
+
+object RosmRegisterRequest {
+  implicit val writes: OWrites[RosmRegisterRequest] = Json.writes[RosmRegisterRequest]
+  implicit val reads: Reads[RosmRegisterRequest]    = Json.reads[RosmRegisterRequest]
+}
 
 case class Individual(
   firstName: String,
