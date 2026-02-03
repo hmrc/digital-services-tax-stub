@@ -17,12 +17,12 @@
 package uk.gov.hmrc.digitalservicestaxstub.services
 
 import java.time.LocalDateTime
-import cats.implicits._
-import org.scalacheck.Gen
+import cats.implicits.*
+import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.cats.implicits.genInstances
 import uk.gov.hmrc.digitalservicestaxstub.models.EnumUtils.idEnum
-import uk.gov.hmrc.smartstub._
-import uk.gov.hmrc.digitalservicestaxstub.models._
+import uk.gov.hmrc.smartstub.*
+import uk.gov.hmrc.digitalservicestaxstub.models.*
 
 object DesGenerator {
 
@@ -39,7 +39,7 @@ object DesGenerator {
     addressLine.almostAlways, // addressLine3
     addressLine.rarely, // addressLine4
     Gen.const("GB"), // countryCode
-    Gen.postcode // postalCode
+    Gen.const("HG18 3RE") // postalCode
   ).mapN(RosmResponseAddress.apply)
 
   private def genEmail =
@@ -105,8 +105,8 @@ object DesGenerator {
     isEditable          <- Gen.boolean
     isAnAgent            = rosmRequest.isAnAgent
     isAnIndividual      <- Gen.const(rosmRequest.individual.isDefined)
-    individual          <- genIndividual(utr).sometimes
-    organisation        <- Gen.const(shouldGenOrg(utr)).sometimes
+    individual          <- genIndividual(utr).almostAlways
+    organisation        <- Gen.const(shouldGenOrg(utr)).almostAlways
     address             <- genRosmResponseAddress
     contactDetails      <- genRosmResponseContactDetails
   } yield RosmRegisterResponse(
