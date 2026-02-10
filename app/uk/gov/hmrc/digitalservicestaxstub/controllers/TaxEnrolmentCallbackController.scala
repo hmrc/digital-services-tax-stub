@@ -33,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TaxEnrolmentCallbackController @Inject() (
+  appConfig: AppConfig,
   cc: ControllerComponents,
   backendConnector: BackendConnector
 )(implicit
