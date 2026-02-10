@@ -23,15 +23,15 @@ import scala.language.implicitConversions
 /** Utility class for creating json formatters for enumerations.
   */
 object EnumUtils {
-  def enumReads[E <: Enumeration](enumeration: E): Reads[enumeration.Value] = new Reads[enumeration.Value] {
-    def reads(json: JsValue): JsResult[enumeration.Value] = json match {
+  def enumReads[E <: Enumeration](enum: E): Reads[E#Value] = new Reads[E#Value] {
+    def reads(json: JsValue): JsResult[E#Value] = json match {
       case JsString(s) =>
         try
-          JsSuccess(enumeration.withName(s))
+          JsSuccess(enum.withName(s))
         catch {
           case _: NoSuchElementException =>
             JsError(
-              s"Enumeration expected of type: '${enumeration.getClass}'," ++
+              s"Enumeration expected of type: '${enum.getClass}'," ++
                 s" but it does not appear to contain the value: '$s'"
             )
         }
@@ -39,12 +39,12 @@ object EnumUtils {
     }
   }
 
-  implicit def enumWrites[E <: Enumeration](enumeration: E): Writes[enumeration.Value] = new Writes[enumeration.Value] {
-    def writes(v: enumeration.Value): JsValue = JsString(v.toString)
+  implicit def enumWrites[E <: Enumeration]: Writes[E#Value] = new Writes[E#Value] {
+    def writes(v: E#Value): JsValue = JsString(v.toString)
   }
 
-  implicit def enumFormat[E <: Enumeration](enumeration: E): Format[enumeration.Value] =
-    Format(enumReads(enumeration), enumWrites(enumeration))
+  implicit def enumFormat[E <: Enumeration](enum: E): Format[E#Value] =
+    Format(enumReads(enum), enumWrites)
 
   implicit val idEnum: Enumerable[String] = pattern"9999999999"
 
