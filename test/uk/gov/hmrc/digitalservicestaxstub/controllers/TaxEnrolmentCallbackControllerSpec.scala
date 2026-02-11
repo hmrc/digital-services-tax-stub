@@ -39,7 +39,7 @@ class TaxEnrolmentCallbackControllerSpec extends AnyFreeSpec with GuiceOneServer
   val appConfig: AppConfig                         = app.injector.instanceOf[AppConfig]
   lazy val cc: ControllerComponents                = stubControllerComponents()
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
-  def controller                                   = new TaxEnrolmentCallbackController(cc = cc, backendConnector = connector)
+  def controller                                   = new TaxEnrolmentCallbackController(appConfig = appConfig, cc = cc, backendConnector = connector)
 
   "TaxEnrolmentCallbackController" - {
     "getSubscriptionByGroupId" - {
