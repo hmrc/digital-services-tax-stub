@@ -8,4 +8,4 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test
   )
 
-scalaVersion := "2.13.16"
+scalaVersion := "2.13.18"
