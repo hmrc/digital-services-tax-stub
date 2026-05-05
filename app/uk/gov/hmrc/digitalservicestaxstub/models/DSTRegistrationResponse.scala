@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class DSTRegistrationResponse(
   processingDate: String,
@@ -24,5 +24,5 @@ case class DSTRegistrationResponse(
 )
 
 case object DSTRegistrationResponse {
-  implicit val format = Json.format[DSTRegistrationResponse]
+  implicit val format: OFormat[DSTRegistrationResponse] = Json.format[DSTRegistrationResponse]
 }
