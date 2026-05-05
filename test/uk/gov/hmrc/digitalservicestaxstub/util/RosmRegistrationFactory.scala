@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.util
 
-import org.apache.pekko.http.scaladsl.model.headers.SameSite
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.digitalservicestaxstub.models.{Address, RosmRegisterRequest, RosmRegisterWithoutIDRequest, RosmRequestWithoutIDContactDetails}
+import uk.gov.hmrc.digitalservicestaxstub.models.*
 
 class RosmRegistrationFactory {
 

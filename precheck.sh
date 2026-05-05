@@ -1,0 +1,1 @@
+sbt clean scalafmtAll test/scalafmtAll test

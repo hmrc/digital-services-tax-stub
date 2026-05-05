@@ -16,25 +16,25 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.connectors
 
-import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Writes
 import play.api.{Configuration, Environment}
-import uk.gov.hmrc.http.Authorization
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
+import play.api.libs.json.{Json, Writes}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpReads, StringContextOps}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.http.HttpClient
+import play.api.libs.ws.writeableOf_JsValue
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class BackendConnector @Inject() (
-  http: HttpClient,
+  httpClientV2: HttpClientV2,
   environment: Environment,
   configuration: Configuration,
   servicesConfig: ServicesConfig
 ) {
 
-  val serviceURL: String = servicesConfig.baseUrl("digital-services-tax")
+  private val serviceURL: String = servicesConfig.baseUrl("digital-services-tax")
 
   def bePost[I, O](url: String, body: I)(implicit
     wts: Writes[I],
@@ -42,9 +42,12 @@ class BackendConnector @Inject() (
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[O] =
-    http.POST[I, O](s"$serviceURL$url", body)(wts, rds, addHeaders, ec)
+    httpClientV2
+      .post(url"$serviceURL$url")(using addHeaders)
+      .withBody(Json.toJson(body))
+      .execute[O]
 
-  def addHeaders(implicit hc: HeaderCarrier): HeaderCarrier =
+  private def addHeaders(implicit hc: HeaderCarrier): HeaderCarrier =
     hc.copy(authorization =
       Some(Authorization(s"Bearer ${servicesConfig.getConfString("digital-services-tax.token", "")}"))
     )
