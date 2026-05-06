@@ -39,7 +39,7 @@ object DesGenerator {
     addressLine.almostAlways, // addressLine3
     addressLine.rarely, // addressLine4
     Gen.const("GB"), // countryCode
-    Gen.postcode // postalCode
+    Gen.const("HG18 3RE") // postalCode
   ).mapN(RosmResponseAddress.apply)
 
   private def genEmail =
