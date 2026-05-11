@@ -79,7 +79,7 @@ class TaxEnrolmentCallbackControllerSpec extends AnyFreeSpec with GuiceOneServer
       s"must return OK and return dstRegNo" in {
         when(connector.bePost[Any, Any](any, any)(using any, any, any, any))
           .thenReturn(Future.successful(Result(new ResponseHeader(200), HttpEntity.NoEntity)))
-        val result: Future[Result] = controller.getDstRegNo("12345")(request)
+        val result: Future[Result] = controller.getDstRegNo("504820876213")(request)
         val dstRegResult           = contentAsString(result)
         status(result) mustBe OK
         contentType(result) mustBe Some("application/json")
@@ -89,7 +89,7 @@ class TaxEnrolmentCallbackControllerSpec extends AnyFreeSpec with GuiceOneServer
 
     "trigger" - {
       s"must return OK and return Tax enrolments callback triggered" in {
-        val result: Future[Result] = controller.trigger("12345")(request)
+        val result: Future[Result] = controller.trigger("1111111000")(request)
         val resultContent          = contentAsString(result)
         status(result) mustBe OK
         contentType(result) mustBe Some("text/plain")

@@ -98,7 +98,11 @@ class DESController @Inject() (
     if (regNo.equalsIgnoreCase("DUDST2932891441")) {
       BadRequest
     } else {
-      val r: DSTRegistrationResponse = DesGenerator.genDstRegisterResponse.map(_.response).sample.get
+      val r: DSTRegistrationResponse =
+        DesGenerator.utrRegData
+          .find(_.dstRegNo == regNo)
+          .map(data => DSTRegistrationResponse(data.processingDate, data.formBundleNumber))
+          .getOrElse(DSTRegistrationResponse(java.time.LocalDateTime.now.toString, "123456789012"))
       Ok(Json.toJson(r))
     }
   }

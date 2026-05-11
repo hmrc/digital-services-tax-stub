@@ -21,7 +21,6 @@ import play.api.libs.json._
 import play.api.mvc._
 import uk.gov.hmrc.digitalservicestaxstub.config.AppConfig
 import uk.gov.hmrc.digitalservicestaxstub.connectors.BackendConnector
-import uk.gov.hmrc.digitalservicestaxstub.models.EnumUtils.idEnum
 import uk.gov.hmrc.digitalservicestaxstub.models.{Identifier, TaxEnrolmentsSubscription}
 import uk.gov.hmrc.digitalservicestaxstub.services.DesGenerator
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
@@ -70,20 +69,18 @@ class TaxEnrolmentCallbackController @Inject() (
       .map(_ => Ok("Tax enrolments callback triggered"))
 
   def trigger(seed: String): Action[AnyContent] = Action.async { implicit request =>
-    DesGenerator.genDstRegisterResponse
-      .seeded(seed)
-      .map { x =>
-        CallbackNotification(x.response.formBundleNumber, "SUCCEEDED")
-      }
+    import DesGenerator.idEnum
+    DesGenerator.utrRegData
+      .find(_.utr == seed)
+      .map(_.formBundleNumber)
+      .map(CallbackNotification(_, "SUCCEEDED"))
       .fold(throw new Exception("bad seed"))(send)
   }
 
   def getDstRegNo(seed: String): Action[AnyContent] = Action.async { request =>
-    DesGenerator.genDstRegisterResponse
-      .seeded(seed)
-      .map { x =>
-        x.dstRegNo
-      }
+    DesGenerator.utrRegData
+      .find(_.formBundleNumber == seed)
+      .map(_.dstRegNo)
       .fold(throw new Exception("bad seed")) { y =>
         Future(Ok(Json.toJson(DstRegNoWrapper(y))))
       }

@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.models
 
+import play.api.libs.json.{Format, JsError, JsResult, JsString, JsSuccess, JsValue}
+
 import java.time.LocalDate
 
 case class RosmRegisterRequest(
@@ -35,12 +37,33 @@ case class Individual(
 
 case class OrganisationRequest(
   organisationName: String,
-  organisationType: RosmOrganisationType.Value
+  organisationType: RosmOrganisationType
 )
 
-object RosmOrganisationType extends Enumeration {
-  val Partnership, LLP   = Value
-  val CorporateBody      = Value("Corporate body")
-  val UnincorporatedBody = Value("Unincorporated body")
-  val Unknown            = Value("Not Specified")
+enum RosmOrganisationType(val value: String) {
+  case Partnership extends RosmOrganisationType("Partnership")
+  case LLP extends RosmOrganisationType("LLP")
+  case CorporateBody extends RosmOrganisationType("Corporate body")
+  case UnincorporatedBody extends RosmOrganisationType("Unincorporated body")
+  case Unknown extends RosmOrganisationType("Not Specified")
+
+  override def toString: String = value
+}
+
+object RosmOrganisationType {
+  def parse(value: String): Option[RosmOrganisationType] =
+    RosmOrganisationType.values.find(_.value == value)
+
+  implicit val format: Format[RosmOrganisationType] = new Format[RosmOrganisationType] {
+    def reads(json: JsValue): JsResult[RosmOrganisationType] = json match {
+      case JsString(s) =>
+        parse(s) match {
+          case Some(obj) => JsSuccess(obj)
+          case None      => JsError(s"Unknown RosmOrganisationType: $s")
+        }
+      case _           => JsError("Expected JsString for RosmOrganisationType")
+    }
+
+    def writes(obj: RosmOrganisationType): JsValue = JsString(obj.value)
+  }
 }

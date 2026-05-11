@@ -20,11 +20,11 @@ import java.time.LocalDateTime
 import cats.implicits._
 import org.scalacheck.Gen
 import org.scalacheck.cats.implicits.genInstances
-import uk.gov.hmrc.digitalservicestaxstub.models.EnumUtils.idEnum
 import uk.gov.hmrc.smartstub._
 import uk.gov.hmrc.digitalservicestaxstub.models._
 
 object DesGenerator {
+  given idEnum: Enumerable[String] = pattern"9999999999"
 
   private def variableLengthString(min: Int, max: Int) =
     Gen.choose(min, max).flatMap(len => Gen.listOfN(len, Gen.alphaLowerChar)).map(_.mkString)
@@ -121,23 +121,11 @@ object DesGenerator {
     contactDetails
   )).usually
 
-  // "^([A-Z]{2}DST[0-9]{10})$"
-  def genDstRegNo: Gen[String] = for {
-    a <- Gen.alphaUpperChar
-    b <- Gen.alphaUpperChar
-    c <- Gen.const("DST")
-    d <- Gen.listOfN(10, Gen.numChar).map(_.mkString)
-  } yield s"$a$b$c$d"
-
-  def genDstRegisterResponse: Gen[RegWrapper] = for {
-    formBundleNumber <- genFormBundleNumber
-    dstRegNo         <- genDstRegNo
-  } yield RegWrapper(
-    DSTRegistrationResponse(
-      LocalDateTime.now.toString,
-      formBundleNumber
-    ),
-    dstRegNo
+  case class UtrReg(utr: String, processingDate: String, formBundleNumber: String, dstRegNo: String)
+  val utrRegData: Seq[UtrReg] = Seq(
+    UtrReg("1111111000", LocalDateTime.now.toString, "504820876213", "AMDST0799721562"),
+    UtrReg("2222222001", LocalDateTime.now.toString, "827391643960", "QIDST6330779458"),
+    UtrReg("XK0009331930599", LocalDateTime.now.toString, "545899919486", ""),
   )
 
   case class RegWrapper(response: DSTRegistrationResponse, dstRegNo: String)
