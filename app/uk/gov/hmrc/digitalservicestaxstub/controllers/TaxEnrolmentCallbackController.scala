@@ -22,11 +22,8 @@ import play.api.mvc._
 import uk.gov.hmrc.digitalservicestaxstub.config.AppConfig
 import uk.gov.hmrc.digitalservicestaxstub.connectors.BackendConnector
 import uk.gov.hmrc.digitalservicestaxstub.models.{Identifier, TaxEnrolmentsSubscription}
-import uk.gov.hmrc.digitalservicestaxstub.services.DesGenerator
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import uk.gov.hmrc.smartstub._
-
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -69,18 +66,20 @@ class TaxEnrolmentCallbackController @Inject() (
       .map(_ => Ok("Tax enrolments callback triggered"))
 
   def trigger(seed: String): Action[AnyContent] = Action.async { implicit request =>
-    import DesGenerator.idEnum
-    DesGenerator.utrRegData
-      .find(_.utr == seed)
-      .map(_.formBundleNumber)
-      .map(CallbackNotification(_, "SUCCEEDED"))
+    (seed match {
+      case "1111111000" => CallbackNotification("504820876213", "SUCCEEDED").some
+      case "2222222001" => CallbackNotification("827391643960", "SUCCEEDED").some
+      case _            => none[CallbackNotification]
+    })
       .fold(throw new Exception("bad seed"))(send)
   }
 
   def getDstRegNo(seed: String): Action[AnyContent] = Action.async { request =>
-    DesGenerator.utrRegData
-      .find(_.formBundleNumber == seed)
-      .map(_.dstRegNo)
+    (seed match {
+      case "504820876213" => "AMDST0799721562".some
+      case "827391643960" => "QIDST6330779458".some
+      case _              => none[String]
+    })
       .fold(throw new Exception("bad seed")) { y =>
         Future(Ok(Json.toJson(DstRegNoWrapper(y))))
       }
