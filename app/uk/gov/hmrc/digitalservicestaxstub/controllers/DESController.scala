@@ -34,16 +34,22 @@ class DESController @Inject() (
   AuthAndEnvAction: AuthAndEnvAction
 ) extends BackendController(cc) {
 
+  private val dstFormBundleNumbers: Map[(String, String), String] = Map(
+    ("utr", "1111111000")       -> "504820876213",
+    ("utr", "2222222001")       -> "827391643960",
+    ("safe", "XZ0006262719690") -> "915276940738",
+    ("safe", "XH0007597348369") -> "949495540658"
+  )
+
   def rosmLookupWithoutID: Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
     withJsonBody[RosmRegisterWithoutIDRequest] { rosmRequest =>
       if (rosmRequest.regime.matches("DST")) {
-        val response = s"""
-            |{
-            |  "processingDate": "${LocalDateTime.now.toString}",
-            |  "sapNumber": "4140347545",
-            |  "safeId": "XZ0006262719690"
-            |}
-            |""".stripMargin
+        val response =
+          scala.io.Source
+            .fromInputStream(getClass.getResourceAsStream("/dst/rosmLookupWithoutID.example.json"))
+            .getLines()
+            .mkString("\n")
+            .replace("[now]", LocalDateTime.now.toString)
         Future.successful(Ok(Json.parse(response)))
       } else
         Future successful BadRequest(
@@ -55,38 +61,11 @@ class DESController @Inject() (
   def rosmLookupWithId(utr: String): Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
     withJsonBody[RosmRegisterRequest](rosmRequest =>
       if (rosmRequest.regime.matches("DST")) {
-        val response = """
-            |{
-            |  "safeId": "XJ0008010817305",
-            |  "isEditable": true,
-            |  "isAnAgent": false,
-            |  "isAnIndividual": false,
-            |  "individual": {
-            |    "firstName": "Aaliyah",
-            |    "middleName": "Chloe",
-            |    "lastName": "Rodriguez",
-            |    "dateOfBirth": "1974-02-28"
-            |  },
-            |  "organisation": {
-            |    "organisationName": "Delhaizer",
-            |    "isAGroup": false,
-            |    "organisationType": "LLP"
-            |  },
-            |  "address": {
-            |    "addressLine1": "The house",
-            |    "addressLine2": "The Road",
-            |    "addressLine3": "aymcuaflybgknvwtedhgrkqxutgpdbtrdjv",
-            |    "addressLine4": "mvmkirbrnlijfwvidduzsrnrinn",
-            |    "countryCode": "GB",
-            |    "postalCode": "HG18 3RE"
-            |  },
-            |  "contactDetails": {
-            |    "primaryPhoneNumber": "01589 919577",
-            |    "faxNumber": "06294 190689",
-            |    "emailAddress": "iiepddgh@aflvbspg.com"
-            |  }
-            |}
-            |""".stripMargin
+        val response =
+          scala.io.Source
+            .fromInputStream(getClass.getResourceAsStream("/dst/rosmLookupWithId.example.json"))
+            .getLines()
+            .mkString("\n")
         Future.successful(Ok(Json.parse(response)))
       } else
         Future successful BadRequest(
@@ -100,34 +79,26 @@ class DESController @Inject() (
     idType: String,
     idNumber: String
   ): Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
-    withJsonBody[EeittSubscribe] { case EeittSubscribe(regData) =>
+    withJsonBody[EeittSubscribe] { _ =>
       if (appConfig.etmpNotReady) {
         Future.successful(Status(appConfig.etmpNotReadyStatus))
+      } else if (regime != "DST") {
+        Future.successful(
+          BadRequest(
+            Json.toJson(FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload."))
+          )
+        )
       } else {
-        (regime, idType, idNumber) match {
-          case ("DST", "utr", "1111111000")       =>
-            Future.successful(Ok(Json.parse(s"""
-                 |{"processingDate":"${LocalDateTime.now.toString}","formBundleNumber":"504820876213"}
-                 |""".stripMargin)))
-          case ("DST", "utr", "2222222001")       =>
-            Future.successful(Ok(Json.parse(s"""
-                 |{"processingDate":"${LocalDateTime.now.toString}","formBundleNumber":"827391643960"}
-                 |""".stripMargin)))
-          case ("DST", "safe", "XZ0006262719690") =>
-            Future.successful(Ok(Json.parse(s"""
-                 |{"processingDate":"${LocalDateTime.now.toString}","formBundleNumber":"915276940738"}
-                 |""".stripMargin)))
-          case ("DST", "safe", "XH0007597348369") =>
-            Future.successful(Ok(Json.parse(s"""
-                 |{"processingDate":"${LocalDateTime.now.toString}","formBundleNumber":"949495540658"}
-                 |""".stripMargin)))
-          case ("DST", _, _)                      =>
-            Future successful NotFound(
-              Json.toJson(FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
+        dstFormBundleNumbers.get((idType, idNumber)) match {
+          case Some(formBundleNumber) =>
+            Future.successful(
+              Ok(Json.obj("processingDate" -> LocalDateTime.now.toString, "formBundleNumber" -> formBundleNumber))
             )
-          case _                                  =>
-            Future successful BadRequest(
-              Json.toJson(FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload."))
+          case None                   =>
+            Future.successful(
+              NotFound(
+                Json.toJson(FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
+              )
             )
         }
       }

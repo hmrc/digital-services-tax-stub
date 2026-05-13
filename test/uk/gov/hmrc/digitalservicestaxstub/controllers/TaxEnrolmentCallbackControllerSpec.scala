@@ -53,22 +53,6 @@ class TaxEnrolmentCallbackControllerSpec extends AnyFreeSpec with GuiceOneServer
         }
       }
 
-      "must return OK and state as 'PENDING' for the input groupId" in {
-        val result: Future[Result]    = controller.getSubscriptionByGroupId("11111")(request)
-        status(result) mustBe OK
-        val taxEnrolmentsSubscription = contentAsJson(result).as[Seq[TaxEnrolmentsSubscription]].head
-        taxEnrolmentsSubscription.state mustBe "PENDING"
-        taxEnrolmentsSubscription.identifiers.isDefined mustBe true
-      }
-
-      "must return OK and state as 'ERROR' for the input groupId" in {
-        val result: Future[Result]    = controller.getSubscriptionByGroupId("22222")(request)
-        status(result) mustBe OK
-        val taxEnrolmentsSubscription = contentAsJson(result).as[Seq[TaxEnrolmentsSubscription]].head
-        taxEnrolmentsSubscription.state mustBe "ERROR"
-        taxEnrolmentsSubscription.identifiers.isDefined mustBe false
-      }
-
       "must return BadRequest for the input groupId 888888" in {
         val result = controller.getSubscriptionByGroupId("888888")(request)
         status(result) mustBe BAD_REQUEST

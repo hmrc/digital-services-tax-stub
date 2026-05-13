@@ -1,0 +1,30 @@
+{
+  "safeId": "XJ0008010817305",
+  "isEditable": true,
+  "isAnAgent": false,
+  "isAnIndividual": false,
+  "individual": {
+    "firstName": "Aaliyah",
+    "middleName": "Chloe",
+    "lastName": "Rodriguez",
+    "dateOfBirth": "1974-02-28"
+  },
+  "organisation": {
+    "organisationName": "Delhaizer",
+    "isAGroup": false,
+    "organisationType": "LLP"
+  },
+  "address": {
+    "addressLine1": "The house",
+    "addressLine2": "The Road",
+    "addressLine3": "aymcuaflybgknvwtedhgrkqxutgpdbtrdjv",
+    "addressLine4": "mvmkirbrnlijfwvidduzsrnrinn",
+    "countryCode": "GB",
+    "postalCode": "HG18 3RE"
+  },
+  "contactDetails": {
+    "primaryPhoneNumber": "01589 919577",
+    "faxNumber": "06294 190689",
+    "emailAddress": "iiepddgh@aflvbspg.com"
+  }
+}

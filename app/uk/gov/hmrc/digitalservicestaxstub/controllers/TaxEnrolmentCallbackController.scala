@@ -21,7 +21,7 @@ import play.api.libs.json._
 import play.api.mvc._
 import uk.gov.hmrc.digitalservicestaxstub.config.AppConfig
 import uk.gov.hmrc.digitalservicestaxstub.connectors.BackendConnector
-import uk.gov.hmrc.digitalservicestaxstub.models.{Identifier, TaxEnrolmentsSubscription}
+import uk.gov.hmrc.digitalservicestaxstub.models.{DstRefData, Identifier, TaxEnrolmentsSubscription}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import javax.inject.{Inject, Singleton}
@@ -35,6 +35,8 @@ class TaxEnrolmentCallbackController @Inject() (
 )(implicit
   executionContext: ExecutionContext
 ) extends BackendController(cc) {
+
+  val dstRefDataList: List[DstRefData] = DstRefData.loadCache
 
   case class CallbackNotification(url: String, state: String, errorResponse: Option[String] = None)
 
@@ -66,35 +68,28 @@ class TaxEnrolmentCallbackController @Inject() (
       .map(_ => Ok("Tax enrolments callback triggered"))
 
   def trigger(seed: String): Action[AnyContent] = Action.async { implicit request =>
-    (seed match {
-      case "1111111000" => CallbackNotification("504820876213", "SUCCEEDED").some
-      case "2222222001" => CallbackNotification("827391643960", "SUCCEEDED").some
-      case _            => none[CallbackNotification]
-    })
+    dstRefDataList
+      .find(_.utr == seed)
+      .map(data => CallbackNotification(data.formBundleNumber, "SUCCEEDED"))
       .fold(throw new Exception("bad seed"))(send)
   }
 
   def getDstRegNo(seed: String): Action[AnyContent] = Action.async { request =>
-    (seed match {
-      case "504820876213" => "AMDST0799721562".some
-      case "827391643960" => "QIDST6330779458".some
-      case _              => none[String]
-    })
-      .fold(throw new Exception("bad seed")) { y =>
-        Future(Ok(Json.toJson(DstRegNoWrapper(y))))
-      }
+    dstRefDataList
+      .find(_.formBundleNumber == seed)
+      .map(data => Future.successful(Ok(Json.toJson(DstRegNoWrapper(data.dstRefNumber)))))
+      .getOrElse(Future.failed(new Exception("bad seed")))
   }
 
   def getSubscriptionByGroupId(groupId: String): Action[AnyContent] = Action.async { request =>
-    val groupIdDstRefMap = Map("12345" -> "AMDST0799721562", "67890" -> "QIDST6330779458", "33333" -> "DUDST2932891441")
-    groupId match {
-      case grpId if groupIdDstRefMap.contains(grpId) =>
+    dstRefDataList.find(_.groupId == groupId) match {
+      case Some(data) =>
         Future.successful(
           Ok(
             Json.toJson(
               Seq(
                 TaxEnrolmentsSubscription(
-                  Some(Seq(Identifier("DSTRefNumber", groupIdDstRefMap.get(grpId).head))),
+                  Some(Seq(Identifier("DSTRefNumber", data.dstRefNumber))),
                   "SUCCEEDED",
                   None
                 )
@@ -102,23 +97,7 @@ class TaxEnrolmentCallbackController @Inject() (
             )
           )
         )
-      case "11111"                                   =>
-        Future.successful(
-          Ok(
-            Json.toJson(
-              Seq(TaxEnrolmentsSubscription(Some(Seq(Identifier("DSTRefNumber", "AMDST0799721562"))), "PENDING", None))
-            )
-          )
-        )
-      case "22222"                                   =>
-        Future.successful(
-          Ok(
-            Json.toJson(
-              Seq(TaxEnrolmentsSubscription(None, "ERROR", Some("It is an error")))
-            )
-          )
-        )
-      case _                                         => Future.successful(BadRequest)
+      case None       => Future.successful(BadRequest)
     }
   }
 

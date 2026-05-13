@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.digitalservicestaxstub.controllers
 
-import play.api.libs.json._
-import play.api.mvc._
-import uk.gov.hmrc.digitalservicestaxstub.models.{Enrolment, GroupEnrolmentsResponseModel, Identifier}
+import play.api.libs.json.*
+import play.api.mvc.*
+import uk.gov.hmrc.digitalservicestaxstub.models.{DstRefData, Enrolment, GroupEnrolmentsResponseModel, Identifier}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
@@ -29,10 +29,9 @@ class EnrolmentStoreProxyController @Inject() (
   cc: ControllerComponents
 ) extends BackendController(cc) {
 
-  def getGroupEnrolments(groupId: String, service: Option[String]): Action[AnyContent] = Action.async { request =>
-    val groupIdDstRefMap = Map("12345" -> "AMDST0799721562", "67890" -> "QIDST6330779458", "33333" -> "DUDST2932891441")
-    groupId match {
-      case grpId if service.isDefined && service.get == "HMRC-DST-ORG" && groupIdDstRefMap.contains(grpId) =>
+  def getGroupEnrolments(groupId: String, service: Option[String]): Action[AnyContent] = Action.async { _ =>
+    (service, DstRefData.loadCache.find(_.groupId == groupId)) match {
+      case (Some("HMRC-DST-ORG"), Some(dstRefData)) =>
         Future.successful(
           Ok(
             Json.toJson(
@@ -43,7 +42,7 @@ class EnrolmentStoreProxyController @Inject() (
                     service.get,
                     "",
                     "Activated",
-                    Seq(Identifier("DSTRefNumber", groupIdDstRefMap.get(grpId).head)),
+                    Seq(Identifier("DSTRefNumber", dstRefData.dstRefNumber)),
                     Some("2023-05-05 12:19:26.798"),
                     Some("2023-05-05 12:19:26.798"),
                     Some(0)
@@ -54,7 +53,8 @@ class EnrolmentStoreProxyController @Inject() (
             )
           )
         )
-      case _                                                                                               => Future.successful(NoContent)
+      case _                                        =>
+        Future.successful(NoContent)
     }
   }
 
