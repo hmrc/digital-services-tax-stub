@@ -21,31 +21,37 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import config.AppConfig
-import models._
-import services.{DesGenerator, DesService}
+import models.*
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
+import java.time.LocalDateTime
 import scala.concurrent.Future
 
 @Singleton()
 class DESController @Inject() (
   appConfig: AppConfig,
   cc: ControllerComponents,
-  AuthAndEnvAction: AuthAndEnvAction,
-  desService: DesService
+  AuthAndEnvAction: AuthAndEnvAction
 ) extends BackendController(cc) {
+
+  private val dstFormBundleNumbers: Map[(String, String), String] = Map(
+    ("utr", "1111111000")       -> "504820876213",
+    ("utr", "2222222001")       -> "827391643960",
+    ("safe", "XZ0006262719690") -> "915276940738",
+    ("safe", "XH0007597348369") -> "949495540658"
+  )
 
   def rosmLookupWithoutID: Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
     withJsonBody[RosmRegisterWithoutIDRequest] { rosmRequest =>
-      if (rosmRequest.regime.matches("DST"))
-        desService.handleRosmLookupWithoutIdRequest(rosmRequest) match {
-          case Some(data) => Future successful Ok(Json.toJson(data))
-          case _          =>
-            Future successful NotFound(
-              Json.toJson(FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
-            )
-        }
-      else
+      if (rosmRequest.regime.matches("DST")) {
+        val response =
+          scala.io.Source
+            .fromInputStream(getClass.getResourceAsStream("/dst/rosmLookupWithoutID.example.json"))
+            .getLines()
+            .mkString("\n")
+            .replace("[now]", LocalDateTime.now.toString)
+        Future.successful(Ok(Json.parse(response)))
+      } else
         Future successful BadRequest(
           Json.toJson(FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload"))
         )
@@ -54,15 +60,14 @@ class DESController @Inject() (
 
   def rosmLookupWithId(utr: String): Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
     withJsonBody[RosmRegisterRequest](rosmRequest =>
-      if (rosmRequest.regime.matches("DST"))
-        desService.handleRosmLookupWithIdRequest(rosmRequest, utr) match {
-          case Some(data) => Future successful Ok(Json.toJson(data))
-          case _          =>
-            Future successful NotFound(
-              Json.toJson(FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
-            )
-        }
-      else
+      if (rosmRequest.regime.matches("DST")) {
+        val response =
+          scala.io.Source
+            .fromInputStream(getClass.getResourceAsStream("/dst/rosmLookupWithId.example.json"))
+            .getLines()
+            .mkString("\n")
+        Future.successful(Ok(Json.parse(response)))
+      } else
         Future successful BadRequest(
           Json.toJson(FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload."))
         )
@@ -74,22 +79,28 @@ class DESController @Inject() (
     idType: String,
     idNumber: String
   ): Action[JsValue] = AuthAndEnvAction.async(parse.json) { implicit request =>
-    withJsonBody[EeittSubscribe] { case EeittSubscribe(regData) =>
+    withJsonBody[EeittSubscribe] { _ =>
       if (appConfig.etmpNotReady) {
         Future.successful(Status(appConfig.etmpNotReadyStatus))
-      } else {
-        if (regime.matches("DST"))
-          desService.handleDstRegistration(idType, idNumber, regData) match {
-            case Some(data) => Future successful Ok(Json.toJson(data))
-            case _          =>
-              Future successful NotFound(
-                Json.toJson(FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
-              )
-          }
-        else
-          Future successful BadRequest(
+      } else if (regime != "DST") {
+        Future.successful(
+          BadRequest(
             Json.toJson(FailureMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid Payload."))
           )
+        )
+      } else {
+        dstFormBundleNumbers.get((idType, idNumber)) match {
+          case Some(formBundleNumber) =>
+            Future.successful(
+              Ok(Json.obj("processingDate" -> LocalDateTime.now.toString, "formBundleNumber" -> formBundleNumber))
+            )
+          case None                   =>
+            Future.successful(
+              NotFound(
+                Json.toJson(FailureMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found"))
+              )
+            )
+        }
       }
     }
   }
@@ -98,8 +109,9 @@ class DESController @Inject() (
     if (regNo.equalsIgnoreCase("DUDST2932891441")) {
       BadRequest
     } else {
-      val r: DSTRegistrationResponse = DesGenerator.genDstRegisterResponse.map(_.response).sample.get
-      Ok(Json.toJson(r))
+      Ok(Json.parse(s"""
+           |{"processingDate":"${LocalDateTime.now.toString}","formBundleNumber":"572037502413"}
+           |""".stripMargin))
     }
   }
 

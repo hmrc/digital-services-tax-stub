@@ -19,7 +19,7 @@ package uk.gov.hmrc.digitalservicestaxstub.connectors
 import play.api.{Configuration, Environment}
 import play.api.libs.json.{Json, Writes}
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpReads, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, StringContextOps}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import play.api.libs.ws.writeableOf_JsValue
 
@@ -41,14 +41,13 @@ class BackendConnector @Inject() (
     rds: HttpReads[O],
     hc: HeaderCarrier,
     ec: ExecutionContext
-  ): Future[O] =
+  ): Future[O] = {
+    val fullUrl = s"$serviceURL$url"
     httpClientV2
-      .post(url"$serviceURL$url")(using addHeaders)
+      .post(url"$fullUrl")
+      .setHeader("Authorization" -> s"Bearer ${servicesConfig.getConfString("digital-services-tax.token", "")}")
       .withBody(Json.toJson(body))
       .execute[O]
+  }
 
-  private def addHeaders(implicit hc: HeaderCarrier): HeaderCarrier =
-    hc.copy(authorization =
-      Some(Authorization(s"Bearer ${servicesConfig.getConfString("digital-services-tax.token", "")}"))
-    )
 }

@@ -16,15 +16,13 @@
 
 package uk.gov.hmrc.digitalservicestaxstub
 
-import play.api.libs.json.{Format, Json, OFormat}
+import play.api.libs.json.*
 
 package object models {
 
-  // ROSM register formatters
-  implicit val organisationTypeFormat: Format[RosmOrganisationType.Value] = EnumUtils.enumFormat(RosmOrganisationType)
-  implicit val individualFormatter: OFormat[Individual]                   = Json.format[Individual]
-  implicit val organisationReqFormatter: OFormat[OrganisationRequest]     = Json.format[OrganisationRequest]
-  implicit val rosmRequestFormatter: OFormat[RosmRegisterRequest]         = Json.format[RosmRegisterRequest]
+  implicit val individualFormatter: OFormat[Individual]               = Json.format[Individual]
+  implicit val organisationReqFormatter: OFormat[OrganisationRequest] = Json.format[OrganisationRequest]
+  implicit val rosmRequestFormatter: OFormat[RosmRegisterRequest]     = Json.format[RosmRegisterRequest]
 
   // ROSM register response formatters
   implicit val rosmResponseAddress: OFormat[RosmResponseAddress]               = Json.format[RosmResponseAddress]

@@ -31,7 +31,7 @@ case class RosmRegisterResponse(
 case class OrganisationResponse(
   organisationName: String,
   isAGroup: Boolean,
-  organisationType: RosmOrganisationType.Value
+  organisationType: RosmOrganisationType
 )
 
 case class RosmResponseAddress(

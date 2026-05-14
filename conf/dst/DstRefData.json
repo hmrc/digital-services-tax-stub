@@ -1,0 +1,20 @@
+[
+  {
+    "groupId": "12345",
+    "dstRefNumber": "AMDST0799721562",
+    "formBundleNumber": "504820876213",
+    "utr": "1111111000"
+  },
+  {
+    "groupId": "67890",
+    "dstRefNumber": "QIDST6330779458",
+    "formBundleNumber": "827391643960",
+    "utr": "2222222001"
+  },
+  {
+    "groupId": "33333",
+    "dstRefNumber": "DUDST2932891441",
+    "formBundleNumber": "392038475612",
+    "utr": "3333333000"
+  }
+]
