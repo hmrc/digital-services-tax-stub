@@ -63,6 +63,25 @@ To check the files have been formatted correctly, run:
 
 `sbt scalafmtCheckAll`
 
+#### [Scoverage](https://github.com/scoverage/sbt-scoverage)
+
+We're using Scoverage to check the code coverage of our test suites.
+
+You can run this on the command line with
+
+    sbt clean coverage test coverageReport
+
+Or from with SBT using
+
+    ; clean ; coverage ; test ; coverageReport
+
+Adjust the following in `build.sbt` to configure Scoverage
+
+    ...
+    ScoverageKeys.coverageMinimum := 90,
+    ScoverageKeys.coverageFailOnMinimum := false,
+    ...
+
 ### License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html")
